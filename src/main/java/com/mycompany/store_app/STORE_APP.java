@@ -3,17 +3,17 @@
  */
 
 package com.mycompany.store_app;
-import com.mycompany.store_app.config.Koneksi;
-
+import com.formdev.flatlaf.FlatLightLaf;
+import com.mycompany.store_app.view.PromptLogin;
 /**
  *
  * @author karis
  */
 public class STORE_APP {
-
     public static void main(String[] args) {
-        /*prompt for two entry point
-        - Admin panel or Customer Checkout mode
+        FlatLightLaf.setup();
         
+        PromptLogin promptlogin = new PromptLogin();
+        promptlogin.setVisible(true);
     }
 }
