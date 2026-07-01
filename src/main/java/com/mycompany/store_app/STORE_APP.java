@@ -12,7 +12,8 @@ import com.mycompany.store_app.config.Koneksi;
 public class STORE_APP {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        /*prompt for two entry point
+        - Admin panel or Customer Checkout mode
         
     }
 }
