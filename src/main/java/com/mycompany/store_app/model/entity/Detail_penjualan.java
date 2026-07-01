@@ -27,12 +27,23 @@ public class Detail_penjualan {
         
     }
     
+//    insert object untuk 
     public Detail_penjualan(Barang barang, int jumlah){
         this.barang = barang;
         this.jumlah = jumlah;
         this.subtotal = barang.getHarga() * jumlah;
     }
-
+    
+    
+//    insert object untuk read database;
+    public Detail_penjualan(int id, Penjualan penjualan, Barang barang, int jumlah, double subtotal){
+        this.id = id;
+        this.penjualan = penjualan;
+        this.barang = barang;
+        this.jumlah = jumlah;
+        this.subtotal = subtotal;
+    }
+    
     public int getId() {
         return id;
     }
