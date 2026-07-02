@@ -112,6 +112,8 @@ public class Detail_penjualanDAO {
                 Detail_penjualan detail = new Detail_penjualan(id, penjualan, barang, jumlah, subtotal);
                 listDetail.add(detail);
             }
+            
+            System.out.println("berhasil : semua data detail penjualan berhasil dibaca");
         }catch(SQLException e){
             System.out.println("Gagal membaca detail penjualan : " + e.getMessage());
         }
@@ -150,6 +152,8 @@ public class Detail_penjualanDAO {
                     listDetail.add(detail);
                 }
             }
+            
+            System.out.println("berhasil : semua data dengna id_nota : " + idNota_dicari + "berhasil di baca");
 
         }catch(SQLException e){
             System.out.println("Gagal membaca detail penjualan : " + e.getMessage());
@@ -189,6 +193,8 @@ public class Detail_penjualanDAO {
                     listDetail.add(detail);
                 }
             }
+            
+            System.out.println("berhasil : semua data dengna id_barang : " + idBarang_dicari + "berhasil di baca");
 
         }catch(SQLException e){
             System.out.println("Gagal membaca detail penjualan : " + e.getMessage());

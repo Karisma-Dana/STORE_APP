@@ -114,6 +114,8 @@ public class VoucerDAO {
             listVoucer.add(vcr);
         }
         
+        System.out.println("berhasil : semua voucerberhasil di baca");
+        
     } catch (SQLException e) {
         System.out.println("Gagal membaca data: " + e.getMessage());
     }
@@ -140,6 +142,8 @@ public class VoucerDAO {
 
                 listVoucer.add(vcr);
             }
+            
+            System.out.println("berhasil : voucer jenis LIMITED berhasil di baca");
         
         } catch (SQLException e) {
             System.out.println("Gagal membaca data: " + e.getMessage());
@@ -167,6 +171,8 @@ public class VoucerDAO {
 
                 listVoucer.add(vcr);
             }
+            
+            System.out.println("berhasil : voucer jenis PUBLIC berhasil di baca");
         
         } catch (SQLException e) {
             System.out.println("Gagal membaca data: " + e.getMessage());
@@ -196,6 +202,8 @@ public class VoucerDAO {
                     voucer.setStok(rs.getInt("stok"));
                 }
             }
+            
+            System.out.println("berhasil : voucer jenis LIMITED terdapat di database");
             
         }catch(SQLException e){
             System.out.println("gagal check voucer LIMITED : " + e.getMessage());

@@ -25,7 +25,7 @@ public class UserDAO {
     
     
 //    untuk register
-    public void insert(User user){
+    public void register(User user){
         
         String querySQL = "INSERT INTO users (email, username, password) VALUES (?, ?, SHA2(?, 256))";
         try(Connection conn = Koneksi.getKoneksi();
@@ -106,6 +106,8 @@ public class UserDAO {
 
                 listUser.add(user);
             }
+            
+            System.out.println("berhasil : semua data dapat dibaca");
         } catch (SQLException e) {
             System.out.println("Gagal membaca data user: " + e.getMessage());
         }
@@ -132,6 +134,7 @@ public class UserDAO {
                     }
                 }
             }
+            System.out.println("berhasil : email belum pernah terdaftar ke dalam database");
             
         }catch(SQLException e){
             System.out.println("gagal check email : " + e.getMessage());
@@ -160,6 +163,7 @@ public class UserDAO {
                     user.setPassword(rs.getString("password"));
                 }
             }
+            System.out.println("berhasil : email dan password sesuai dengan database");
             
         }catch (SQLException e){
             System.out.println("gagal pengecekan login : " + e.getMessage());

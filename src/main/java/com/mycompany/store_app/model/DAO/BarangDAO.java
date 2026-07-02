@@ -81,6 +81,8 @@ public class BarangDAO {
             } else {
                 System.out.println("Barang dengan ID tersebut tidak ditemukan.");
             }
+            
+            System.out.println("berhasil : data barang id : " + id + "berhasil dihapus");
 
         } catch (SQLException e) {
             System.out.println("Gagal delete data barang: " + e.getMessage());
@@ -107,6 +109,8 @@ public class BarangDAO {
 
                 listBarang.add(barang);
             }
+            
+            System.out.println("berhasil : semua data barang didapat");
 
         } catch (SQLException e) {
             System.out.println("Gagal membaca data barang: " + e.getMessage());
@@ -134,6 +138,8 @@ public class BarangDAO {
                     barang = new Barang(id, nama, harga, stok);
                 }
             }
+            
+            System.out.println("berhasil : data barang dengan ID : " + id_barang + "berhasil didapat");
         }catch(SQLException e){
             System.out.println("Gagal get data : " + e.getMessage());
         }

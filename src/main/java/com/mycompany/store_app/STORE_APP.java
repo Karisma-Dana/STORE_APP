@@ -15,7 +15,8 @@ public class STORE_APP {
     
 
     public void main(String[] args) {
-
+//    file java untuk pengecekan setiap function yang diperlukan. 
+//    NOTE : DILARANG MENAMBAHKAN FUNCTION LAIN SELAIN UNTUK TESTING PRODUCT. 
         
         
         

@@ -83,6 +83,8 @@ public class PenjualanDAO {
             } else {
                 System.out.println("Nota dengan ID tersebut tidak ditemukan.");
             }
+            
+            System.out.println("berhasil : penjualan dengan id " + idNota + "berhasil di hapus");
 
         } catch (SQLException e) {
             System.out.println("Gagal delete data penjualan: " + e.getMessage());
@@ -107,6 +109,8 @@ public class PenjualanDAO {
                 Penjualan penjualan = new Penjualan(id, total, tanggal);
                 listPenjualan.add(penjualan);
             }
+            
+            System.out.println("berhasil : semua data penjualan berhasil di baca");
 
         } catch (SQLException e) {
             System.out.println("Gagal membaca laporan penjualan: " + e.getMessage());
@@ -133,6 +137,7 @@ public class PenjualanDAO {
                     penjualan = new Penjualan(id, total, tanggal);
                 }
             }
+            System.out.println("berhasil : data penjualan dengan id " + id_nota + "berhasil didapat");
         }catch(SQLException e){
             System.out.println("Gagal get data : " + e.getMessage());
         }
