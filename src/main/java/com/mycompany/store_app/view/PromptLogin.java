@@ -7,6 +7,8 @@ package com.mycompany.store_app.view;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.Cursor;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -17,6 +19,14 @@ public class PromptLogin extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PromptLogin.class.getName());
     private String selectedform;
     
+    public static void addTextListener(JTextField field, java.util.function.Consumer<String> consumer) {
+        field.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
+            @Override public void removeUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
+            @Override public void changedUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
+        });
+    }
+        
     private void enterSignUp(){
         SignInForm.setVisible(false);
         SignUpForm.setVisible(true);
@@ -26,12 +36,50 @@ public class PromptLogin extends javax.swing.JFrame {
         SignInForm.setVisible(true);
         SignUpForm.setVisible(false);
     }
+    
+    private void confirmPassMatch(){}
+    
+    
+    private void signIn(){
+        
+    }
+    
+    private void signUp(){
+    
+    }
     /**
      * Creates new form PromptLogin
      */
     public PromptLogin() {
         initComponents();
         ((JComponent) getContentPane()).putClientProperty("FlatLaf.style", "background: #0cb9a8;");
+        addTextListener(ConfirmPasswordField, newtext -> {
+            
+        });
+        
+        addTextListener(PasswordField, newtext -> {
+            
+        });
+        
+        addTextListener(UsernameField, newtext -> {
+
+        });
+        
+        addTextListener(UsernameField1, newtext -> {
+
+        });
+        
+        addTextListener(EmailField3, newtext -> {
+
+        });
+        
+        addTextListener(EmailField3, newtext -> {
+
+        });
+        
+        addTextListener(PasswordField1, newtext -> {
+
+        });
         enterSignIn();
     }
 
@@ -164,7 +212,6 @@ public class PromptLogin extends javax.swing.JFrame {
         SignUpLabel.setForeground(new java.awt.Color(0, 0, 238));
         SignUpLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         SignUpLabel.setText("Sign up");
-        SignUpLabel.setPreferredSize(new java.awt.Dimension(40, 16));
         SignUpLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 SignUpLabelMouseClicked(evt);
@@ -208,7 +255,7 @@ public class PromptLogin extends javax.swing.JFrame {
                 .addComponent(UsernamePanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36)
                 .addComponent(PasswordPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(SignInButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(PromptPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -252,6 +299,7 @@ public class PromptLogin extends javax.swing.JFrame {
         SignUpButton.setForeground(new java.awt.Color(255, 255, 255));
         SignUpButton.setText("Sign Up");
         SignUpButton.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
+        SignUpButton.addActionListener(this::SignUpButtonActionPerformed);
 
         PasswordPanel.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -393,7 +441,7 @@ public class PromptLogin extends javax.swing.JFrame {
                 .addComponent(PasswordPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(ConfirmPasswordPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(SignUpButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(PromptPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -449,8 +497,12 @@ public class PromptLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_ConfirmPasswordFieldActionPerformed
 
     private void SignInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SignInButtonActionPerformed
-
+        signIn();
     }//GEN-LAST:event_SignInButtonActionPerformed
+
+    private void SignUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SignUpButtonActionPerformed
+        signUp();
+    }//GEN-LAST:event_SignUpButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -480,7 +532,6 @@ public class PromptLogin extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPasswordField ConfirmPasswordField;
     private javax.swing.JPanel ConfirmPasswordPanel;
-    private javax.swing.JTextField EmailField1;
     private javax.swing.JTextField EmailField3;
     private javax.swing.JPanel EmailPanel;
     private javax.swing.JLabel HeaderLabel;
@@ -508,12 +559,10 @@ public class PromptLogin extends javax.swing.JFrame {
     private javax.swing.JPanel UsernamePanel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel3;
     // End of variables declaration//GEN-END:variables
 }
