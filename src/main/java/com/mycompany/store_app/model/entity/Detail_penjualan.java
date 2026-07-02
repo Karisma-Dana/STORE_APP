@@ -27,7 +27,7 @@ public class Detail_penjualan {
         
     }
     
-//    insert object untuk 
+//    insert object untuk fitur keranjang. setelah masuk ke kasir baru setting variable object penjualan nya. 
     public Detail_penjualan(Barang barang, int jumlah){
         this.barang = barang;
         this.jumlah = jumlah;
