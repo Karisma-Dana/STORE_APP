@@ -8,6 +8,7 @@ package com.mycompany.store_app.model.entity;
  *
  * @author karis
  */
+
 public class Voucer {
     private int id;
     private String kode_voucer;
@@ -20,6 +21,7 @@ public class Voucer {
     public Voucer(){
         
     }
+    
     public Voucer(String kode_voucer, String jenis_voucer, double diskon, int stok){
         this.kode_voucer = kode_voucer;
         this.jenis_voucer = jenis_voucer;

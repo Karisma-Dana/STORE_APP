@@ -27,7 +27,7 @@ public class UserDAO {
 //    untuk register
     public void insert(User user){
         
-        String querySQL = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+        String querySQL = "INSERT INTO users (email, username, password) VALUES (?, ?, SHA2(?, 256))";
         try(Connection conn = Koneksi.getKoneksi();
             PreparedStatement ps = conn.prepareStatement(querySQL)){
             
@@ -144,7 +144,7 @@ public class UserDAO {
 //    untuk bagian login
     public User login(String email, String password){
         User user = null;
-        String querySQL = "SELECT * FROM users WHERE email = ? AND password = ?";
+        String querySQL = "SELECT * FROM users WHERE email = ? AND password = SHA2(?, 256)";
         
         try(Connection conn = Koneksi.getKoneksi();
              PreparedStatement ps = conn.prepareStatement(querySQL)){
