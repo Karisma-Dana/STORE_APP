@@ -21,9 +21,7 @@ public class Koneksi {
                 String url = "jdbc:mysql://localhost:3306/store_app";
                 String user = "root";
                 String password = "";
-                
-                
-                
+
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 
                 conn = DriverManager.getConnection(url, user, password);
