@@ -3,8 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package com.mycompany.store_app.view;
-import com.mycompany.store_app.controller.PenjualanController;
+import com.mycompany.store_app.controller.PenjualanController;         
+import com.mycompany.store_app.controller.DetailPenjualanCotroller; 
+import com.mycompany.store_app.model.entity.Barang;
+import com.mycompany.store_app.model.entity.Detail_penjualan;
+import com.mycompany.store_app.model.entity.Penjualan;
+import java.util.List;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -15,7 +21,10 @@ import javax.swing.text.DocumentFilter;
  * @author karis
  */
 public class PenjualanPanel extends javax.swing.JPanel {
-    private PenjualanController controller;
+    
+    private PenjualanController pjController;
+    private DetailPenjualanCotroller dpController;
+    
 
     /**
      * Creates new form PembelianPanel
@@ -23,49 +32,12 @@ public class PenjualanPanel extends javax.swing.JPanel {
     public PenjualanPanel() {
         initComponents();
         
-        this.controller = new PenjualanController(this);
         
-        String placeholderHarga = "Masukkan ID NOTA...";
         
-        txtSearchNota.setText(placeholderHarga);
-        txtSearchNota.setForeground(java.awt.Color.GRAY);
-
-        // 2. Terapkan Filter yang "Pintar"
-        ((AbstractDocument) txtSearchNota.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                // Izinkan input jika teks adalah angka ATAU jika teks yang masuk adalah bagian dari logika placeholder (biarkan kosong/null jika perlu)
-                if (text.matches("\\d+")) {
-                    super.replace(fb, offset, length, text, attrs);
-                }
-            }
-
-            @Override
-            public void insertString(DocumentFilter.FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string.matches("\\d+")) {
-                    super.insertString(fb, offset, string, attr);
-                }
-            }
-        });
-
-        // 3. FocusListener untuk mengatur teks placeholder
-            txtSearchNota.addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (txtSearchNota.getText().equals(placeholderHarga)) {
-                    txtSearchNota.setText("");
-                    txtSearchNota.setForeground(java.awt.Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (txtSearchNota.getText().isEmpty()) {
-                    txtSearchNota.setText(placeholderHarga);
-                    txtSearchNota.setForeground(java.awt.Color.GRAY);
-                }
-            }
-        });
+        this.pjController = new PenjualanController();
+        this.dpController = new DetailPenjualanCotroller();
+     
+        updateTableNota("");
     }
 
     /**
@@ -261,44 +233,72 @@ public class PenjualanPanel extends javax.swing.JPanel {
     private void tableNotaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableNotaMouseClicked
         // TODO add your handling code here:
         
-        controller.klikTableNota();
-        //        int selectedRow = tableNota.getSelectedRow();
-        //        if (selectedRow != -1){
-            //            String idNota = tableNota.getValueAt(selectedRow, 0).toString();
-            //
-            //            DefaultTableModel modelDetail = (DefaultTableModel) tableDetail.getModel();
-            //            modelDetail.setRowCount(0);
-            //
-            //            for (Detail_penjualan detail : listDetail){
-                //                Object[] rowData ={
-                    //
-                    //
-                    //                    detail.getJumlah();
-                    //                    detail.getSubtotal();
-                    //
-                    //                }
-                //            }
-            //
-            //
-            //
-            //        }
+        int selectedRow = tableNota.getSelectedRow();
+        if (selectedRow != -1){
+            int idNota = Integer.parseInt(tableNota.getValueAt(selectedRow, 0).toString());
+            List<Detail_penjualan> listDetail = dpController.ambilDetailByNota(idNota);
+            DefaultTableModel modelDetail = (DefaultTableModel) tableDetail.getModel();
+            modelDetail.setRowCount(0);
+            
+            for (Detail_penjualan dp : listDetail){
+                Barang barang = dp.getBarang();
+                Object[] rowData = {
+                    dp.getId(),
+                    barang.getNama(),
+                    dp.getJumlah(),
+                    dp.getSubtotal()
+                };
+                modelDetail.addRow(rowData);
+            }
+        }
+
 
     }//GEN-LAST:event_tableNotaMouseClicked
 
     private void txtSearchNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchNotaActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_txtSearchNotaActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
         String keyword = txtSearchNota.getText().trim();
-        controller.UpdateTableNota(keyword);
+        updateTableNota(keyword);
     }//GEN-LAST:event_btnSearchActionPerformed
     public JTable getTabelNota() {
         return tableNota; 
     }
     public JTable getTabelDetail() {
         return tableDetail; 
+    }
+    
+    public void updateTableNota(String keyword){
+        DefaultTableModel modelNota = (DefaultTableModel) tableNota.getModel();
+        modelNota.setRowCount(0);
+        
+        if (keyword == null || keyword.isEmpty()){
+            List<Penjualan> listPenjualan = pjController.getAll();
+
+            for (Penjualan pj : listPenjualan){
+                Object[] rowData = {
+                    pj.getId_nota(),
+                    pj.getTotal(),
+                    pj.getTanggal()
+                };
+                modelNota.addRow(rowData);
+            }
+            
+        }else{
+            Penjualan pj = pjController.getDatabyID(Integer.parseInt(keyword));
+            Object[] rowData = {
+                pj.getId_nota(),
+                pj.getTotal(),
+                pj.getTanggal()
+            };
+            modelNota.addRow(rowData);
+        }
+        
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

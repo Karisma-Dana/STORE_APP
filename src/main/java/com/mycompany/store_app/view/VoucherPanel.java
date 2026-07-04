@@ -4,18 +4,30 @@
  */
 package com.mycompany.store_app.view;
 
+import com.mycompany.store_app.controller.VoucherController;
+import com.mycompany.store_app.model.entity.Voucer;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author karis
  */
 public class VoucherPanel extends javax.swing.JPanel {
+    
+    private final VoucherController controller;
+    
 
     /**
      * Creates new form VoucherPanel
      */
     public VoucherPanel() {
         initComponents();
+        this.controller = new VoucherController();
+        updateTableVoucher("", "");
     }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -52,20 +64,24 @@ public class VoucherPanel extends javax.swing.JPanel {
         tableVoucher.setForeground(new java.awt.Color(51, 51, 51));
         tableVoucher.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, "asu", "23000", "4", "23", null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Id", "Kode Voucher", "Jenis", "Diskon (...%)", "Stok", "Action"
+                "Id", "Kode Voucher", "Jenis", "Diskon (...%)", "Stok"
             }
         ));
+        tableVoucher.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableVoucherMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tableVoucher);
         if (tableVoucher.getColumnModel().getColumnCount() > 0) {
             tableVoucher.getColumnModel().getColumn(0).setMaxWidth(50);
@@ -96,6 +112,7 @@ public class VoucherPanel extends javax.swing.JPanel {
         btnSearch.setForeground(new java.awt.Color(0, 0, 0));
         btnSearch.setText("Search");
         btnSearch.setBorderPainted(false);
+        btnSearch.addActionListener(this::btnSearchActionPerformed);
         jPanel3.add(btnSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(922, 19, 104, 33));
 
         cbJenis.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "LIMITED", "PUBLIC", " " }));
@@ -157,12 +174,79 @@ public class VoucherPanel extends javax.swing.JPanel {
 
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
         // TODO add your handling code here:
+        
+        InsertVoucher panel = new InsertVoucher(this);
+        panel.setLocationRelativeTo(this);
+        panel.setVisible(true);
+        updateTableVoucher("", "");
     }//GEN-LAST:event_btnTambahActionPerformed
 
     private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtSearchActionPerformed
 
+    private void tableVoucherMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableVoucherMouseClicked
+        // TODO add your handling code here:
+        
+        int selectedRow = tableVoucher.getSelectedRow();
+        if (selectedRow != -1){
+            int idVoucher = Integer.parseInt(tableVoucher.getValueAt(selectedRow, 0).toString());
+            Voucer vcr = controller.getDataById(idVoucher);
+            
+            UpdateVoucher panel = new UpdateVoucher(this);
+            panel.getData(vcr);
+            panel.setLocationRelativeTo(this);
+            panel.setVisible(true);
+            updateTableVoucher("", "");
+        }
+        
+    }//GEN-LAST:event_tableVoucherMouseClicked
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        String filter = cbJenis.getSelectedItem().toString();
+        String keyword = txtSearch.getText().trim();
+        updateTableVoucher(keyword, filter);
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    public void updateTableVoucher(String keyword, String filter){
+        List<Voucer> listVoucer = null;
+  
+        if (keyword == null || keyword.isEmpty()){
+            if (filter == "PUBLIC"){
+                listVoucer = controller.ambilVoucerPublic("");
+            }else if(filter == "LIMITED"){
+                listVoucer = controller.ambilVoucerLimited("");   
+            }else{
+                listVoucer = controller.ambilSemuaVoucer();
+            }
+            
+        }else{
+            if (filter == "PUBLIC"){ 
+                listVoucer = controller.ambilVoucerPublic(keyword);
+            }else if(filter == "LIMITED"){
+                listVoucer = controller.ambilVoucerLimited(keyword);  
+            }else{
+                listVoucer = controller.search(keyword);
+            }
+            
+        }
+        
+        DefaultTableModel modelBarang = (DefaultTableModel) tableVoucher.getModel();
+        modelBarang.setRowCount(0);
+        
+        for (Voucer vc : listVoucer){
+            Object[] rowData = {
+                vc.getId(),
+                vc.getKode_voucer(),
+                vc.getJenis_voucer(),
+                vc.getDiskon(),
+                vc.getStok()
+            };
+            modelBarang.addRow(rowData);
+            
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSearch;

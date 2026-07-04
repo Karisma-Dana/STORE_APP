@@ -5,19 +5,26 @@
 package com.mycompany.store_app.controller;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-/**
- *
- * @author Flame
- */
+import com.mycompany.store_app.model.DAO.UserDAO;
+import com.mycompany.store_app.model.entity.User;
+import java.util.List;
+
+
+
 public class userController {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean signInSignal = false;
+    
+    private  final UserDAO dao;
     
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);
     }
     
-    public userController(){}
+    public userController(){
+        this.dao = new UserDAO();
+    }
+    
     
     public void fireSignal(){
         pcs.firePropertyChange("signedIn", false, true);
@@ -30,4 +37,10 @@ public class userController {
     public boolean signUp(){
         return false;
     }
+    
+    public List<User> getAllData(){
+        return dao.readAll();
+    }
+    
+    
 }
