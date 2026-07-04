@@ -7,7 +7,7 @@ package com.mycompany.store_app.view;
 import com.mycompany.store_app.controller.BarangController;
 import com.mycompany.store_app.controller.PenjualanController;
 import com.mycompany.store_app.controller.VoucherController;
-import com.mycompany.store_app.controller.userController;
+import com.mycompany.store_app.controller.UserController;
 import com.mycompany.store_app.model.entity.Penjualan;
 import com.mycompany.store_app.model.entity.User;
 import java.util.List;
@@ -21,7 +21,7 @@ public class AdminMainPanel extends javax.swing.JPanel {
 
     private final BarangController bc;
     private final VoucherController vc;
-    private final userController uc;
+    private final UserController uc;
     private final PenjualanController pc;
     /**
      * Creates new form BarangPanel
@@ -31,7 +31,7 @@ public class AdminMainPanel extends javax.swing.JPanel {
         this.pc = new PenjualanController();
         this.vc = new VoucherController();
         this.bc = new BarangController();
-        this.uc = new userController();
+        this.uc = new UserController();
         updateTableNota();
         updateTableUser();
         updateNumber();
