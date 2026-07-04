@@ -60,7 +60,6 @@ public class InsertVoucher extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("INSERT VOUCHER");
 
         txtKode.addActionListener(this::txtKodeActionPerformed);
@@ -70,7 +69,6 @@ public class InsertVoucher extends javax.swing.JFrame {
         spinStok.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
         btnInsert.setBackground(new java.awt.Color(0, 255, 156));
-        btnInsert.setForeground(new java.awt.Color(0, 0, 0));
         btnInsert.setText("INSERT");
         btnInsert.setBorderPainted(false);
         btnInsert.addActionListener(this::btnInsertActionPerformed);

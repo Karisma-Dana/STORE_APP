@@ -69,7 +69,6 @@ public class AdminPanel extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(200, 760));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("ADMIN");
 
         btnDashboard.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
