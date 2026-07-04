@@ -9,15 +9,17 @@ import java.awt.Cursor;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
+import com.mycompany.store_app.model.entity.User;
+import com.mycompany.store_app.controller.UserController;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 /**
  *
  * @author Flame
  */
 public class PromptLogin extends javax.swing.JFrame {
-    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PromptLogin.class.getName());
-    private String selectedform;
+    private UserController usercontroller;
     
     public static void addTextListener(JTextField field, java.util.function.Consumer<String> consumer) {
         field.getDocument().addDocumentListener(new DocumentListener() {
@@ -26,59 +28,83 @@ public class PromptLogin extends javax.swing.JFrame {
             @Override public void changedUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
         });
     }
+
+    private PromptLogin() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
         
     private void enterSignUp(){
         SignInForm.setVisible(false);
         SignUpForm.setVisible(true);
+        OTPForm.setVisible(false);
     }
     
     private void enterSignIn(){
         SignInForm.setVisible(true);
         SignUpForm.setVisible(false);
+        OTPForm.setVisible(false);
     }
     
-    private void confirmPassMatch(){}
-    
-    
     private void signIn(){
-        
+        User user = new User();
+        user.setEmail(EmailField.getText());
+        user.setPassword(String.copyValueOf(PasswordField1.getPassword()));
+        usercontroller.signIn(user);
+    }
+    
+    private boolean checkPassMatch(){
+        String conpass = String.copyValueOf(ConfirmPasswordField.getPassword());
+        String pass = String.copyValueOf(PasswordField.getPassword());
+        boolean res = pass.equals(conpass);
+        PassCheckLabel.setVisible(!res);
+        System.out.println(String.copyValueOf(ConfirmPasswordField.getPassword()));
+        System.out.println(String.copyValueOf(PasswordField.getPassword()));
+        return res;
+    }
+
+    public void createOTPInput(OTPCallback callback) {
+        SignUpForm.setVisible(false);
+        OTPForm.setVisible(true);
+        OTPField.setText("");
+
+        ConfirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String otp = OTPField.getText();
+                OTPForm.setVisible(false);
+                callback.onOTPEntered(otp);
+            }
+        });
+    }
+    
+    public void onCompleteSignUp(){
+        SignUpForm.setVisible(false);
+        SignInForm.setVisible(true);
+        OTPForm.setVisible(false);
+    }
+    public interface OTPCallback {
+        void onOTPEntered(String otp);
     }
     
     private void signUp(){
-    
+        if (!checkPassMatch()){return;}
+        
+        usercontroller.signUp(this, new User(UsernameField1.getText(), String.copyValueOf(PasswordField.getPassword()), EmailField3.getText()));
     }
     /**
      * Creates new form PromptLogin
+     * @param usercontroller
      */
-    public PromptLogin() {
+    public PromptLogin(UserController usercontroller) {
+        this.usercontroller = usercontroller;
         initComponents();
         ((JComponent) getContentPane()).putClientProperty("FlatLaf.style", "background: #0cb9a8;");
         addTextListener(ConfirmPasswordField, newtext -> {
-            
+            checkPassMatch();
         });
         
         addTextListener(PasswordField, newtext -> {
-            
-        });
-        
-        addTextListener(UsernameField, newtext -> {
-
-        });
-        
-        addTextListener(UsernameField1, newtext -> {
-
-        });
-        
-        addTextListener(EmailField3, newtext -> {
-
-        });
-        
-        addTextListener(EmailField3, newtext -> {
-
-        });
-        
-        addTextListener(PasswordField1, newtext -> {
-
+            checkPassMatch();
         });
         enterSignIn();
     }
@@ -94,7 +120,7 @@ public class PromptLogin extends javax.swing.JFrame {
 
         SignInForm = new javax.swing.JPanel();
         UsernamePanel1 = new javax.swing.JPanel();
-        UsernameField = new javax.swing.JTextField();
+        EmailField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         SignInButton = new javax.swing.JButton();
         PasswordPanel1 = new javax.swing.JPanel();
@@ -126,6 +152,17 @@ public class PromptLogin extends javax.swing.JFrame {
         ConfirmPasswordPanel = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         ConfirmPasswordField = new javax.swing.JPasswordField();
+        PassCheckLabel = new javax.swing.JLabel();
+        OTPForm = new javax.swing.JPanel();
+        UsernamePanel2 = new javax.swing.JPanel();
+        OTPField = new javax.swing.JTextField();
+        CodeLabel = new javax.swing.JLabel();
+        ConfirmButton = new javax.swing.JButton();
+        HeaderPanel2 = new javax.swing.JPanel();
+        HeaderLabel2 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        PromptPanel2 = new javax.swing.JPanel();
+        LabelPrompt2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(12, 185, 168));
@@ -140,16 +177,14 @@ public class PromptLogin extends javax.swing.JFrame {
 
         UsernamePanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        UsernameField.addActionListener(this::UsernameFieldActionPerformed);
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel1.setText("Username");
+        jLabel1.setText("Email");
 
         javax.swing.GroupLayout UsernamePanel1Layout = new javax.swing.GroupLayout(UsernamePanel1);
         UsernamePanel1.setLayout(UsernamePanel1Layout);
         UsernamePanel1Layout.setHorizontalGroup(
             UsernamePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(UsernameField)
+            .addComponent(EmailField)
             .addGroup(UsernamePanel1Layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -160,7 +195,7 @@ public class PromptLogin extends javax.swing.JFrame {
                 .addGap(0, 0, 0)
                 .addComponent(jLabel1)
                 .addGap(0, 0, 0)
-                .addComponent(UsernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(EmailField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         SignInButton.setBackground(new java.awt.Color(11, 186, 81));
@@ -174,8 +209,6 @@ public class PromptLogin extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Password");
-
-        PasswordField1.addActionListener(this::PasswordField1ActionPerformed);
 
         javax.swing.GroupLayout PasswordPanel1Layout = new javax.swing.GroupLayout(PasswordPanel1);
         PasswordPanel1.setLayout(PasswordPanel1Layout);
@@ -408,6 +441,9 @@ public class PromptLogin extends javax.swing.JFrame {
                 .addComponent(ConfirmPasswordField, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE))
         );
 
+        PassCheckLabel.setForeground(new java.awt.Color(255, 51, 51));
+        PassCheckLabel.setText("*Password does not match!");
+
         javax.swing.GroupLayout SignUpFormLayout = new javax.swing.GroupLayout(SignUpForm);
         SignUpForm.setLayout(SignUpFormLayout);
         SignUpFormLayout.setHorizontalGroup(
@@ -415,17 +451,19 @@ public class PromptLogin extends javax.swing.JFrame {
             .addGroup(SignUpFormLayout.createSequentialGroup()
                 .addGroup(SignUpFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(SignUpFormLayout.createSequentialGroup()
-                        .addGap(104, 104, 104)
-                        .addGroup(SignUpFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(PromptPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
-                            .addComponent(PasswordPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(SignUpButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(UsernamePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(EmailPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(ConfirmPasswordPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(SignUpFormLayout.createSequentialGroup()
                         .addGap(96, 96, 96)
-                        .addComponent(HeaderPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(HeaderPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(SignUpFormLayout.createSequentialGroup()
+                        .addGap(104, 104, 104)
+                        .addGroup(SignUpFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(PassCheckLabel)
+                            .addGroup(SignUpFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(PromptPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
+                                .addComponent(PasswordPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(SignUpButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(UsernamePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(EmailPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(ConfirmPasswordPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         SignUpFormLayout.setVerticalGroup(
@@ -442,27 +480,116 @@ public class PromptLogin extends javax.swing.JFrame {
                 .addGap(12, 12, 12)
                 .addComponent(ConfirmPasswordPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(PassCheckLabel)
+                .addGap(18, 18, 18)
                 .addComponent(SignUpButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(PromptPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(35, 35, 35))
         );
 
+        PassCheckLabel.setVisible(false);
+
         SignUpForm.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
 
         getContentPane().add(SignUpForm, new java.awt.GridBagConstraints());
 
+        OTPForm.setBackground(new java.awt.Color(255, 255, 255));
+        OTPForm.setPreferredSize(new java.awt.Dimension(450, 500));
+
+        UsernamePanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        OTPField.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        OTPField.addActionListener(this::OTPFieldActionPerformed);
+
+        CodeLabel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        CodeLabel.setText("Code");
+
+        javax.swing.GroupLayout UsernamePanel2Layout = new javax.swing.GroupLayout(UsernamePanel2);
+        UsernamePanel2.setLayout(UsernamePanel2Layout);
+        UsernamePanel2Layout.setHorizontalGroup(
+            UsernamePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(OTPField)
+            .addGroup(UsernamePanel2Layout.createSequentialGroup()
+                .addComponent(CodeLabel)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        UsernamePanel2Layout.setVerticalGroup(
+            UsernamePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, UsernamePanel2Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(CodeLabel)
+                .addGap(0, 0, 0)
+                .addComponent(OTPField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        ConfirmButton.setBackground(new java.awt.Color(11, 186, 81));
+        ConfirmButton.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        ConfirmButton.setForeground(new java.awt.Color(255, 255, 255));
+        ConfirmButton.setText("Confirm");
+        SignInButton.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
+        ConfirmButton.addActionListener(this::ConfirmButtonActionPerformed);
+
+        HeaderPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        HeaderPanel2.setLayout(new java.awt.BorderLayout());
+
+        HeaderLabel2.setFont(new java.awt.Font("Segoe UI", 1, 28)); // NOI18N
+        HeaderLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        HeaderLabel2.setText("Verification");
+        HeaderPanel2.add(HeaderLabel2, java.awt.BorderLayout.CENTER);
+
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("insert the code we sent you");
+        HeaderPanel2.add(jLabel10, java.awt.BorderLayout.PAGE_END);
+
+        PromptPanel2.setOpaque(false);
+        PromptPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        LabelPrompt2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        LabelPrompt2.setText("Did not receive code? (welp :C)");
+        LabelPrompt2.setMaximumSize(new java.awt.Dimension(202, 16));
+        LabelPrompt2.setPreferredSize(new java.awt.Dimension(202, 16));
+        PromptPanel2.add(LabelPrompt2, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 0, 190, 25));
+
+        javax.swing.GroupLayout OTPFormLayout = new javax.swing.GroupLayout(OTPForm);
+        OTPForm.setLayout(OTPFormLayout);
+        OTPFormLayout.setHorizontalGroup(
+            OTPFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(OTPFormLayout.createSequentialGroup()
+                .addGroup(OTPFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(OTPFormLayout.createSequentialGroup()
+                        .addGap(104, 104, 104)
+                        .addGroup(OTPFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(PromptPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
+                            .addComponent(ConfirmButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(UsernamePanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(OTPFormLayout.createSequentialGroup()
+                        .addGap(96, 96, 96)
+                        .addComponent(HeaderPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        OTPFormLayout.setVerticalGroup(
+            OTPFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(OTPFormLayout.createSequentialGroup()
+                .addGap(45, 45, 45)
+                .addComponent(HeaderPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(72, 72, 72)
+                .addComponent(UsernamePanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(ConfirmButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(PromptPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35))
+        );
+
+        OTPForm.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
+
+        getContentPane().add(OTPForm, new java.awt.GridBagConstraints());
+        OTPForm.setVisible(false);
+
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void PasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PasswordField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PasswordField1ActionPerformed
-
-    private void UsernameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UsernameFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_UsernameFieldActionPerformed
 
     private void SignUpLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SignUpLabelMouseClicked
         enterSignUp();
@@ -504,6 +631,14 @@ public class PromptLogin extends javax.swing.JFrame {
         signUp();
     }//GEN-LAST:event_SignUpButtonActionPerformed
 
+    private void OTPFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OTPFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_OTPFieldActionPerformed
+
+    private void ConfirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfirmButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ConfirmButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -530,22 +665,32 @@ public class PromptLogin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel CodeLabel;
+    private javax.swing.JButton ConfirmButton;
     private javax.swing.JPasswordField ConfirmPasswordField;
     private javax.swing.JPanel ConfirmPasswordPanel;
+    private javax.swing.JTextField EmailField;
     private javax.swing.JTextField EmailField3;
     private javax.swing.JPanel EmailPanel;
     private javax.swing.JLabel HeaderLabel;
     private javax.swing.JLabel HeaderLabel1;
+    private javax.swing.JLabel HeaderLabel2;
     private javax.swing.JPanel HeaderPanel;
     private javax.swing.JPanel HeaderPanel1;
+    private javax.swing.JPanel HeaderPanel2;
     private javax.swing.JLabel LabelPrompt;
     private javax.swing.JLabel LabelPrompt1;
+    private javax.swing.JLabel LabelPrompt2;
+    private javax.swing.JTextField OTPField;
+    private javax.swing.JPanel OTPForm;
+    private javax.swing.JLabel PassCheckLabel;
     private javax.swing.JPasswordField PasswordField;
     private javax.swing.JPasswordField PasswordField1;
     private javax.swing.JPanel PasswordPanel;
     private javax.swing.JPanel PasswordPanel1;
     private javax.swing.JPanel PromptPanel;
     private javax.swing.JPanel PromptPanel1;
+    private javax.swing.JPanel PromptPanel2;
     private javax.swing.JButton SignInButton;
     private javax.swing.JPanel SignInForm;
     private javax.swing.JLabel SignInLabel;
@@ -553,11 +698,12 @@ public class PromptLogin extends javax.swing.JFrame {
     private javax.swing.JPanel SignUpForm;
     private javax.swing.JLabel SignUpLabel;
     private javax.swing.JLabel SubtextlLabel;
-    private javax.swing.JTextField UsernameField;
     private javax.swing.JTextField UsernameField1;
     private javax.swing.JPanel UsernamePanel;
     private javax.swing.JPanel UsernamePanel1;
+    private javax.swing.JPanel UsernamePanel2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

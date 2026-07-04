@@ -12,7 +12,7 @@ import java.util.Random;
 public class testing {
     private EmailServices email = new EmailServices(); 
     public void main(){
-        generateOTP();
+        email.sendEmailOTP("gptfamily09@gmail.com", generateOTP());
     }
     
     

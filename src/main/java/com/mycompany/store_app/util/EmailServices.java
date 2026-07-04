@@ -31,6 +31,7 @@ public class EmailServices {
         });
         
         try {
+            System.out.println("test");
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(dstEmail));

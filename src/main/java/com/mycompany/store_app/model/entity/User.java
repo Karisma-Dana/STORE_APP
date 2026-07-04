@@ -18,6 +18,11 @@ public class User {
         
     }
     
+    public User(String nama, String password){
+        this.nama = nama;
+        this.password = password;
+    }
+    
     public User(String nama, String password, String email){
         this.nama = nama;
         this.password = password;
