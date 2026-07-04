@@ -4,6 +4,9 @@
  */
 package com.mycompany.store_app.view;
 
+import static com.mycompany.store_app.view.MainPanel.main;
+
+
 /**
  *
  * @author karis
@@ -11,13 +14,35 @@ package com.mycompany.store_app.view;
 public class AdminPanel extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminPanel.class.getName());
-
+    
+    BarangPanel bp = new BarangPanel();
+    PenjualanPanel pp = new PenjualanPanel();
+    VoucherPanel vp = new VoucherPanel();
+    AdminMainPanel ap = new AdminMainPanel();
+    
     /**
      * Creates new form AdminPanel
      */
     public AdminPanel() {
         initComponents();
+        
+        java.awt.Dimension sizeMain = main.getPreferredSize();
+        
+        main.add(bp);
+        main.add(pp);
+        main.add(vp);
+        main.add(ap);
+        
+        ap.setVisible(true);
+        pp.setVisible(false);
+        bp.setVisible(false);       
+        vp.setVisible(false);
+        
+        
     }
+    
+    // Fungsi pembantu agar tidak ngetik berulang-ulang
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,7 +60,7 @@ public class AdminPanel extends javax.swing.JFrame {
         btnVoucher = new javax.swing.JButton();
         btnPembelian = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        main = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1300, 760));
@@ -48,15 +73,19 @@ public class AdminPanel extends javax.swing.JFrame {
 
         btnDashboard.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnDashboard.setText("DASHBOARD");
+        btnDashboard.addActionListener(this::btnDashboardActionPerformed);
 
         btnBarang.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnBarang.setText("BARANG");
+        btnBarang.addActionListener(this::btnBarangActionPerformed);
 
         btnVoucher.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnVoucher.setText("VOUCHER");
+        btnVoucher.addActionListener(this::btnVoucherActionPerformed);
 
         btnPembelian.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnPembelian.setText("PEMBELIAN");
+        btnPembelian.addActionListener(this::btnPembelianActionPerformed);
 
         jButton5.setBackground(new java.awt.Color(255, 0, 82));
         jButton5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -103,9 +132,10 @@ public class AdminPanel extends javax.swing.JFrame {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.LINE_START);
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setLayout(new java.awt.CardLayout());
-        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
+        main.setBackground(new java.awt.Color(255, 255, 255));
+        main.setPreferredSize(new java.awt.Dimension(1100, 760));
+        main.setLayout(new java.awt.CardLayout());
+        getContentPane().add(main, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -113,6 +143,43 @@ public class AdminPanel extends javax.swing.JFrame {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void btnBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBarangActionPerformed
+        // TODO add your handling code here:
+        ap.setVisible(false);
+        pp.setVisible(false);
+        bp.setVisible(true);       
+        vp.setVisible(false);
+    }//GEN-LAST:event_btnBarangActionPerformed
+
+    private void btnVoucherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoucherActionPerformed
+        // TODO add your handling code here:
+        ap.setVisible(false);
+        pp.setVisible(false);
+        bp.setVisible(false);       
+        vp.setVisible(true);
+    }//GEN-LAST:event_btnVoucherActionPerformed
+
+    private void btnPembelianActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPembelianActionPerformed
+        // TODO add your handling code here:
+        ap.setVisible(false);
+        pp.setVisible(true);
+        bp.setVisible(false);       
+        vp.setVisible(false);
+    }//GEN-LAST:event_btnPembelianActionPerformed
+
+    private void btnDashboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDashboardActionPerformed
+        // TODO add your handling code here:
+        
+        ap.updateNumber();
+        ap.updateTableNota();
+        ap.updateTableUser();
+        
+        ap.setVisible(true);
+        pp.setVisible(false);
+        bp.setVisible(false);       
+        vp.setVisible(false);
+    }//GEN-LAST:event_btnDashboardActionPerformed
 
     /**
      * @param args the command line arguments
@@ -147,6 +214,6 @@ public class AdminPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel main;
     // End of variables declaration//GEN-END:variables
 }

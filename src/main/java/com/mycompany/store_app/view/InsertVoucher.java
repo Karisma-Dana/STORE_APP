@@ -3,6 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.store_app.view;
+import com.mycompany.store_app.controller.VoucherController;
+import com.mycompany.store_app.model.entity.Voucer;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -14,78 +16,22 @@ import javax.swing.text.DocumentFilter;
 public class InsertVoucher extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(InsertVoucher.class.getName());
-
+    private final VoucherController controller;
+    private Voucer  dataVoucer;
+    private VoucherPanel panelUtama;
     /**
      * Creates new form UpdateBarang
      */
-    public InsertVoucher() {
+    public InsertVoucher(VoucherPanel panelUtama) {
         initComponents();
-        String placeholderDiskon = "Masukkan angka...";
-        
-        txtDiskon.setText(placeholderDiskon);
-        txtDiskon.setForeground(java.awt.Color.GRAY);
+        this.panelUtama = panelUtama;
+        this.controller = new VoucherController();
 
-        // 2. Terapkan Filter yang "Pintar"
-        ((AbstractDocument) txtDiskon.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                // Izinkan input jika teks adalah angka ATAU jika teks yang masuk adalah bagian dari logika placeholder (biarkan kosong/null jika perlu)
-                if (text.matches("\\d+")) {
-                    super.replace(fb, offset, length, text, attrs);
-                }
-            }
-
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string.matches("\\d+")) {
-                    super.insertString(fb, offset, string, attr);
-                }
-            }
-        });
-
-        // 3. FocusListener untuk mengatur teks placeholder
-            txtDiskon.addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (txtDiskon.getText().equals(placeholderDiskon)) {
-                    txtDiskon.setText("");
-                    txtDiskon.setForeground(java.awt.Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (txtDiskon.getText().isEmpty()) {
-                    txtDiskon.setText(placeholderDiskon);
-                    txtDiskon.setForeground(java.awt.Color.GRAY);
-                }
-            }
-        });
-        
-        String placeholder = "Masukkan angka nama voucher";
-        txtKode.setText(placeholder);
-        txtKode.setForeground(java.awt.Color.GRAY);
-
-        txtKode.addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (txtKode.getText().equals(placeholder)) {
-                    txtKode.setText("");
-                    txtKode.setForeground(java.awt.Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (txtKode.getText().isEmpty()) {
-                    txtKode.setText(placeholder);
-                    txtKode.setForeground(java.awt.Color.GRAY);
-                }
-            }
-        });
-
-        
-        
+    }
+    
+    public InsertVoucher(){
+        initComponents();
+        this.controller = new VoucherController();
     }
 
     /**
@@ -104,9 +50,13 @@ public class InsertVoucher extends javax.swing.JFrame {
         spinStok = new javax.swing.JSpinner();
         btnInsert = new javax.swing.JButton();
         cbJenis = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(318, 343));
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(318, 355));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -114,22 +64,37 @@ public class InsertVoucher extends javax.swing.JFrame {
 
         txtKode.addActionListener(this::txtKodeActionPerformed);
 
+        txtDiskon.addActionListener(this::txtDiskonActionPerformed);
+
         spinStok.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
         btnInsert.setBackground(new java.awt.Color(0, 255, 156));
         btnInsert.setText("INSERT");
         btnInsert.setBorderPainted(false);
+        btnInsert.addActionListener(this::btnInsertActionPerformed);
 
         cbJenis.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "LIMITED", "PUBLIC" }));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("Kode Voucher");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setText("Jenis Voucher");
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel4.setText("Diskon Voucher");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel5.setText("Stok");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addComponent(txtDiskon, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(125, 125, 125))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -139,14 +104,23 @@ public class InsertVoucher extends javax.swing.JFrame {
                         .addGap(36, 36, 36)
                         .addComponent(btnInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(txtKode, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(99, 99, 99)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(txtKode, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(spinStok, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtDiskon, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(spinStok, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(43, 43, 43))
         );
         jPanel1Layout.setVerticalGroup(
@@ -154,16 +128,25 @@ public class InsertVoucher extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addComponent(jLabel1)
-                .addGap(26, 26, 26)
+                .addGap(4, 4, 4)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtKode, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addGap(4, 4, 4)
                 .addComponent(cbJenis, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txtDiskon, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(spinStok, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(btnInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(btnInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -183,6 +166,27 @@ public class InsertVoucher extends javax.swing.JFrame {
     private void txtKodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtKodeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtKodeActionPerformed
+
+    private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
+        // TODO add your handling code here:
+        
+        String kode = txtKode.getText().trim();
+        double diskon = Double.parseDouble(txtDiskon.getText().trim());
+        String jenis = cbJenis.getSelectedItem().toString();
+        int stok = (Integer) spinStok.getValue();
+        
+        this.dataVoucer = new Voucer(kode, jenis, diskon, stok);
+              
+        controller.insert(dataVoucer);
+        if (this.panelUtama != null){
+            this.panelUtama.updateTableVoucher("", "");
+        }
+        this.dispose();
+    }//GEN-LAST:event_btnInsertActionPerformed
+
+    private void txtDiskonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDiskonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDiskonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -206,13 +210,17 @@ public class InsertVoucher extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new InsertVoucher().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new InsertVoucher(null).setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnInsert;
     private javax.swing.JComboBox<String> cbJenis;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSpinner spinStok;
     private javax.swing.JTextField txtDiskon;
