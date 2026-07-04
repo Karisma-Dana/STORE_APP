@@ -4,18 +4,91 @@
  */
 package com.mycompany.store_app.view;
 
+import com.mycompany.store_app.controller.BarangController;
+import com.mycompany.store_app.controller.PenjualanController;
+import com.mycompany.store_app.controller.VoucherController;
+import com.mycompany.store_app.controller.userController;
+import com.mycompany.store_app.model.entity.Penjualan;
+import com.mycompany.store_app.model.entity.User;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author karis
  */
 public class AdminMainPanel extends javax.swing.JPanel {
 
+    private final BarangController bc;
+    private final VoucherController vc;
+    private final userController uc;
+    private final PenjualanController pc;
     /**
      * Creates new form BarangPanel
      */
     public AdminMainPanel() {
         initComponents();
+        this.pc = new PenjualanController();
+        this.vc = new VoucherController();
+        this.bc = new BarangController();
+        this.uc = new userController();
+        updateTableNota();
+        updateTableUser();
+        updateNumber();
     }
+    
+    public void updateNumber(){
+        int member = uc.getAllData().size();
+        int jumlahBarang = bc.ambilSemuaBarang().size();
+        int jumlahVoucher = vc.ambilSemuaVoucer().size();
+        List<Penjualan> listPenjualan = pc.getAll();
+        
+        double omset = 0;
+        for (Penjualan penjualan : listPenjualan){
+            omset += penjualan.getTotal();
+        }
+        
+        txtMember.setText(String.valueOf(member));
+        txtJumlahVoucer.setText(String.valueOf(jumlahVoucher));
+        txtOmset.setText(String.valueOf(omset));
+        txtJumlahBarang.setText(String.valueOf(jumlahBarang));
+        
+        
+    }
+    
+    public void updateTableNota(){
+        DefaultTableModel modelNota = (DefaultTableModel) tableNota.getModel();
+        modelNota.setRowCount(0);
+        List<Penjualan> listPenjualan = pc.getAll();
+        int counter = 0;
+        for (Penjualan penjualan : listPenjualan){
+            Object[] rowData = {
+                counter,
+                penjualan.getId_nota(),
+                penjualan.getTotal(),
+                penjualan.getTanggal()
+            
+            };
+            modelNota.addRow(rowData);
+            counter++;
+        }
+    }
+    public void updateTableUser(){
+        DefaultTableModel modelUser = (DefaultTableModel) tableUser.getModel();
+        modelUser.setRowCount(0);
+        List<User> listUser = uc.getAllData();
+        int counter = 0;
+        for (User user : listUser){
+            Object[] rowData = {
+                counter,
+                user.getNama(),
+                user.getEmail() 
+            };
+            modelUser.addRow(rowData);
+            counter++;
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -29,21 +102,21 @@ public class AdminMainPanel extends javax.swing.JPanel {
         jSeparator1 = new javax.swing.JSeparator();
         jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        Omset = new javax.swing.JLabel();
+        txtMember = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        Member = new javax.swing.JLabel();
+        txtOmset = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        txtJumlahBarang = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
+        txtJumlahVoucer = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableNota = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tableUser = new javax.swing.JTable();
 
         setBackground(new java.awt.Color(245, 247, 251));
 
@@ -52,33 +125,33 @@ public class AdminMainPanel extends javax.swing.JPanel {
         jLabel2.setForeground(new java.awt.Color(153, 153, 153));
         jLabel2.setText("Dashboard");
 
-        jPanel1.setBackground(new java.awt.Color(155, 89, 182));
+        jPanel1.setBackground(new java.awt.Color(46, 204, 113));
         jPanel1.setPreferredSize(new java.awt.Dimension(254, 140));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI Black", 0, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Member");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
+        Omset.setFont(new java.awt.Font("Segoe UI Black", 0, 24)); // NOI18N
+        Omset.setForeground(new java.awt.Color(255, 255, 255));
+        Omset.setText("Omset");
+        jPanel1.add(Omset, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("1");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
+        txtMember.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
+        txtMember.setForeground(new java.awt.Color(255, 255, 255));
+        txtMember.setText("1");
+        jPanel1.add(txtMember, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
 
-        jPanel2.setBackground(new java.awt.Color(46, 204, 113));
+        jPanel2.setBackground(new java.awt.Color(155, 89, 182));
         jPanel2.setPreferredSize(new java.awt.Dimension(254, 140));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI Black", 0, 24)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("Omset ");
-        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
+        Member.setFont(new java.awt.Font("Segoe UI Black", 0, 24)); // NOI18N
+        Member.setForeground(new java.awt.Color(255, 255, 255));
+        Member.setText("Member");
+        jPanel2.add(Member, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("1");
-        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
+        txtOmset.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
+        txtOmset.setForeground(new java.awt.Color(255, 255, 255));
+        txtOmset.setText("1");
+        jPanel2.add(txtOmset, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
 
         jPanel3.setBackground(new java.awt.Color(74, 144, 226));
         jPanel3.setPreferredSize(new java.awt.Dimension(254, 140));
@@ -89,10 +162,10 @@ public class AdminMainPanel extends javax.swing.JPanel {
         jLabel9.setText("Jumlah Barang");
         jPanel3.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 200, -1));
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setText("1");
-        jPanel3.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
+        txtJumlahBarang.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
+        txtJumlahBarang.setForeground(new java.awt.Color(255, 255, 255));
+        txtJumlahBarang.setText("1");
+        jPanel3.add(txtJumlahBarang, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
 
         jPanel4.setBackground(new java.awt.Color(255, 107, 107));
         jPanel4.setPreferredSize(new java.awt.Dimension(254, 140));
@@ -103,13 +176,13 @@ public class AdminMainPanel extends javax.swing.JPanel {
         jLabel11.setText("Jumlah Voucher");
         jPanel4.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
-        jLabel12.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setText("1");
-        jPanel4.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
+        txtJumlahVoucer.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
+        txtJumlahVoucer.setForeground(new java.awt.Color(255, 255, 255));
+        txtJumlahVoucer.setText("1");
+        jPanel4.add(txtJumlahVoucer, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
 
-        jTable1.setBackground(new java.awt.Color(255, 255, 255));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableNota.setBackground(new java.awt.Color(255, 255, 255));
+        tableNota.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -120,13 +193,13 @@ public class AdminMainPanel extends javax.swing.JPanel {
                 "Id", "Kode Nota", "Total", "Tanggal"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
+        jScrollPane1.setViewportView(tableNota);
+        if (tableNota.getColumnModel().getColumnCount() > 0) {
+            tableNota.getColumnModel().getColumn(0).setMaxWidth(50);
         }
 
-        jTable2.setBackground(new java.awt.Color(255, 255, 255));
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tableUser.setBackground(new java.awt.Color(255, 255, 255));
+        tableUser.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -137,9 +210,11 @@ public class AdminMainPanel extends javax.swing.JPanel {
                 "Id", "Username", "Email"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setMaxWidth(50);
+        jScrollPane2.setViewportView(tableUser);
+        if (tableUser.getColumnModel().getColumnCount() > 0) {
+            tableUser.getColumnModel().getColumn(0).setMaxWidth(50);
+            tableUser.getColumnModel().getColumn(1).setMinWidth(160);
+            tableUser.getColumnModel().getColumn(1).setMaxWidth(160);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -148,24 +223,24 @@ public class AdminMainPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 624, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(12, 12, 12)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(12, 12, 12)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(12, 12, 12)
-                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(21, Short.MAX_VALUE))
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -188,14 +263,10 @@ public class AdminMainPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel Member;
+    private javax.swing.JLabel Omset;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -204,7 +275,11 @@ public class AdminMainPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JTable tableNota;
+    private javax.swing.JTable tableUser;
+    private javax.swing.JLabel txtJumlahBarang;
+    private javax.swing.JLabel txtJumlahVoucer;
+    private javax.swing.JLabel txtMember;
+    private javax.swing.JLabel txtOmset;
     // End of variables declaration//GEN-END:variables
 }

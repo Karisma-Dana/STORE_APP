@@ -53,8 +53,5 @@ public class EmailServices {
             System.out.println("Gagal mengirim email: " + e.getMessage());
         }
         
-    }
-    
-    
-    
+    } 
 }

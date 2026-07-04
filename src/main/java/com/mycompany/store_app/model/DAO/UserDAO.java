@@ -118,7 +118,7 @@ public class UserDAO {
     
 //    pengecekan emai unik
     public boolean checkEmail_unik(String email){
-        boolean answare = false;
+        boolean answer = true;
         String querySQL = "SELECT COUNT(*) AS total FROM users WHERE email = ? ";
         
         try(Connection conn = Koneksi.getKoneksi();
@@ -130,7 +130,7 @@ public class UserDAO {
                 if (rs.next()){
                     int jumlah = rs.getInt("total");
                     if (jumlah > 0){
-                        answare = true;
+                        answer = false;
                     }
                 }
             }
@@ -140,7 +140,7 @@ public class UserDAO {
             System.out.println("gagal check email : " + e.getMessage());
         }
         
-        return answare; 
+        return answer; 
     }
     
     

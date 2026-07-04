@@ -3,18 +3,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package com.mycompany.store_app.view;
+import com.mycompany.store_app.controller.BarangController;
+import com.mycompany.store_app.model.entity.Barang;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author karis
  */
 public class BarangPanel extends javax.swing.JPanel {
+    
+    private final BarangController controller;
 
     /**
      * Creates new form BarangPanel
      */
     public BarangPanel() {
         initComponents();
+        this.controller = new BarangController();
+        updateTableBarang("");
     }
 
     /**
@@ -29,10 +37,10 @@ public class BarangPanel extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        tableBarang = new javax.swing.JTable();
+        btnTambahBarang = new javax.swing.JToggleButton();
+        txtSearch = new javax.swing.JTextField();
+        btnSearch = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(245, 247, 251));
 
@@ -44,50 +52,56 @@ public class BarangPanel extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jTable1.setBackground(new java.awt.Color(255, 255, 255));
-        jTable1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jTable1.setForeground(new java.awt.Color(51, 51, 51));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableBarang.setBackground(new java.awt.Color(255, 255, 255));
+        tableBarang.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        tableBarang.setForeground(new java.awt.Color(51, 51, 51));
+        tableBarang.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"3", "asu", "23000", "4", "23"},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {"3", "asu", "23000", "4"},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Id", "Nama", "Harga", "Stok", "Action"
+                "Id", "Nama", "Harga", "Stok"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setMaxWidth(60);
+        tableBarang.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableBarangMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tableBarang);
+        if (tableBarang.getColumnModel().getColumnCount() > 0) {
+            tableBarang.getColumnModel().getColumn(0).setMaxWidth(60);
         }
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 70, 1007, 569));
 
-        jToggleButton1.setBackground(new java.awt.Color(0, 255, 156));
-        jToggleButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jToggleButton1.setForeground(new java.awt.Color(0, 0, 0));
-        jToggleButton1.setText("Tambah Barang ");
-        jToggleButton1.setBorderPainted(false);
-        jToggleButton1.addActionListener(this::jToggleButton1ActionPerformed);
-        jPanel1.add(jToggleButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 19, 210, 32));
+        btnTambahBarang.setBackground(new java.awt.Color(0, 255, 156));
+        btnTambahBarang.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnTambahBarang.setForeground(new java.awt.Color(0, 0, 0));
+        btnTambahBarang.setText("Tambah Barang ");
+        btnTambahBarang.setBorderPainted(false);
+        btnTambahBarang.addActionListener(this::btnTambahBarangActionPerformed);
+        jPanel1.add(btnTambahBarang, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 19, 210, 32));
 
-        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jTextField1.addActionListener(this::jTextField1ActionPerformed);
-        jPanel1.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 19, 296, 32));
+        txtSearch.setBackground(new java.awt.Color(255, 255, 255));
+        txtSearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        txtSearch.addActionListener(this::txtSearchActionPerformed);
+        jPanel1.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 19, 296, 32));
 
-        jButton1.setBackground(new java.awt.Color(0, 255, 156));
-        jButton1.setForeground(new java.awt.Color(0, 0, 0));
-        jButton1.setText("Search");
-        jButton1.setBorderPainted(false);
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(922, 19, 104, 33));
+        btnSearch.setBackground(new java.awt.Color(0, 255, 156));
+        btnSearch.setForeground(new java.awt.Color(0, 0, 0));
+        btnSearch.setText("Search");
+        btnSearch.setBorderPainted(false);
+        btnSearch.addActionListener(this::btnSearchActionPerformed);
+        jPanel1.add(btnSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(922, 19, 104, 33));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -111,22 +125,86 @@ public class BarangPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+    private void btnTambahBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahBarangActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
+        
+        InsertBarang panel = new InsertBarang(this);
+        panel.setLocationRelativeTo(this);
+        panel.setVisible(true);
+        
+    }//GEN-LAST:event_btnTambahBarangActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtSearchActionPerformed
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        String keyword = txtSearch.getText().trim();
+        updateTableBarang(keyword);
+        
+        
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void tableBarangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableBarangMouseClicked
+        // TODO add your handling code here:
+        
+        int selectedRow = tableBarang.getSelectedRow();
+        if (selectedRow != -1){
+            int idBarang = Integer.parseInt(tableBarang.getValueAt(selectedRow, 0).toString());
+            Barang barang = controller.ambilBarangById(idBarang);
+            
+            UpdateBarang panel = new UpdateBarang(this);
+            panel.getData(barang);
+            panel.setLocationRelativeTo(this);
+            panel.setVisible(true);
+        }
+        
+        
+        
+    }//GEN-LAST:event_tableBarangMouseClicked
+
+    public void updateTableBarang(String keyword){
+        if (keyword == null || keyword.isEmpty()){
+            List<Barang> listBarang = controller.ambilSemuaBarang();
+             
+            DefaultTableModel modelBarang = (DefaultTableModel) tableBarang.getModel();
+            modelBarang.setRowCount(0);
+            
+            for (Barang barang : listBarang){
+                Object[] rowData = {
+                    barang.getId(),
+                    barang.getNama(),
+                    barang.getHarga(),
+                    barang.getStok()
+                };
+                modelBarang.addRow(rowData);
+            }
+        }else{
+            List<Barang> listBarang = controller.searchByName(keyword);
+             
+            DefaultTableModel modelBarang = (DefaultTableModel) tableBarang.getModel();
+            modelBarang.setRowCount(0);
+            
+            for (Barang barang : listBarang){
+                Object[] rowData = {
+                    barang.getId(),
+                    barang.getNama(),
+                    barang.getHarga(),
+                    barang.getStok()
+                };
+                modelBarang.addRow(rowData);
+            }
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JToggleButton btnTambahBarang;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JTable tableBarang;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }
