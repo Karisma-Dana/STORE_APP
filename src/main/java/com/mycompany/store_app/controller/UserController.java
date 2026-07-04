@@ -9,6 +9,7 @@ import com.mycompany.store_app.model.DAO.UserDAO;
 import com.mycompany.store_app.model.entity.User;
 import com.mycompany.store_app.util.EmailServices;
 import com.mycompany.store_app.view.PromptLogin;
+import java.util.List;
 import java.util.Random;
 import javax.swing.JOptionPane;
 /**
@@ -72,5 +73,9 @@ public class UserController {
             return true;
         }
         return false;
+    }
+    
+    public List<User> getAllData(){
+        return userdao.readAll();
     }
 }
