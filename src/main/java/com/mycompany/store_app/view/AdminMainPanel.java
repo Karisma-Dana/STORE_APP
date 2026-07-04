@@ -8,12 +8,12 @@ package com.mycompany.store_app.view;
  *
  * @author karis
  */
-public class MainPanel extends javax.swing.JPanel {
+public class AdminMainPanel extends javax.swing.JPanel {
 
     /**
      * Creates new form BarangPanel
      */
-    public MainPanel() {
+    public AdminMainPanel() {
         initComponents();
     }
 
