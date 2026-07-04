@@ -5,6 +5,20 @@
 package com.mycompany.store_app.view;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.mycompany.store_app.model.entity.ItemCell;
+import com.mycompany.store_app.model.entity.Barang;
+import com.mycompany.store_app.model.entity.Detail_penjualan;
+import com.mycompany.store_app.model.entity.QtyCellEditor;
+import java.awt.Color;
+import java.awt.Component;
+import java.util.ArrayList;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -12,14 +26,66 @@ import com.formdev.flatlaf.FlatClientProperties;
  */
 public class MainPanel extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainPanel.class.getName());
-
     /**
      * Creates new form MainPanel
      */
+    final private String SEARCHPLACEHOLDER = "Type to search for item...";
+    private int EntryPerPage = 25;
+    private int CurPage = 0;
+    private int TotalPage;
+    private int CurEntryPerPage = 0;
+    private double CurFilterHarga = 0;
+    
+    private ArrayList<Detail_penjualan> ListBarangTemp = new ArrayList();
+    private ArrayList<Barang> TableDataList = new ArrayList();
+    
     public MainPanel() {
         initComponents();
+        loadPage();
     }
-
+    public void getTableData(){
+        
+    }
+    
+    public void newRow(DefaultTableModel model,QtyCellEditor qtyEditor){
+        model.addRow(new ItemCell(new Barang(1, "Tes", 5, 5)).toTableRow(TableBarang.getRowCount()+1));
+        qtyEditor.addPropertyChangeListener(evt -> {
+            if ("quantity".equals(evt.getPropertyName())) {
+                    Object[] data = (Object[]) evt.getNewValue();
+                    int row = (int) data[0];
+                    int col = (int) data[1];
+                    int newQty = (int) data[2];
+                    
+                    if (newQty > 0) {
+                        Barang newBarang = ((ItemCell) TableBarang.getValueAt(row, 0)).getBarang();
+                        for (int i = 0; i < ListBarangTemp.size(); i++){
+                            if(ListBarangTemp.get(i).getBarang().equals(newBarang)){
+                                ListBarangTemp.get(i).setJumlah(newQty);
+                                return;
+                            }
+                        }
+                        
+                        ListBarangTemp.add(new Detail_penjualan(newBarang, newQty));
+                    }
+            }
+        });
+    }
+    public void loadPage(){
+        QtyCellEditor qtyEditor = new QtyCellEditor();
+        TableBarang.getColumnModel().getColumn(5).setCellEditor(qtyEditor);
+        TableBarang.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer(){
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+                setHorizontalAlignment(SwingConstants.CENTER);
+                return this;
+            }
+            
+        });
+        DefaultTableModel model = (DefaultTableModel)TableBarang.getModel();
+        for (int i = 0; i < 25; i++){newRow(model, qtyEditor);}
+        LabelResult.setText("Showing " + CurEntryPerPage +" result of " + EntryPerPage + " possible");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -31,13 +97,47 @@ public class MainPanel extends javax.swing.JFrame {
 
         TopPanel = new javax.swing.JPanel();
         CartButton = new javax.swing.JButton();
+        BackButton = new javax.swing.JButton();
         CardMainPanel = new javax.swing.JPanel();
         ShoppingPanel = new javax.swing.JPanel();
-        ShoppingTopPanel = new javax.swing.JPanel();
+        FilterPanelMenu = new javax.swing.JPanel();
+        FilterHargaSpinner = new javax.swing.JSpinner();
+        jLabel2 = new javax.swing.JLabel();
+        ShoppingTablePanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        TableBarang = new javax.swing.JTable();
+        PageNumberLabel = new javax.swing.JLabel();
+        NextButton = new javax.swing.JButton();
+        PreviousButton = new javax.swing.JButton();
+        AddToCartButton = new javax.swing.JButton();
+        SearchField = new javax.swing.JTextField();
+        LabelResult = new javax.swing.JLabel();
         FilterButton = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        KasirPanel = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        TabelCheckout = new javax.swing.JTable();
+        TGLLabel = new javax.swing.JLabel();
+        ResiLabel = new javax.swing.JLabel();
+        SubtotalLabelUnder = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        SubtotalLabelRightnum = new javax.swing.JLabel();
+        VoucherComboBox = new javax.swing.JComboBox<>();
+        VoucherField = new javax.swing.JTextField();
+        TotalLabel = new javax.swing.JLabel();
+        Voucher1Label = new javax.swing.JLabel();
+        TotalLabelNum = new javax.swing.JLabel();
+        SubtotalLabelRight = new javax.swing.JLabel();
+        Voucher2Label = new javax.swing.JLabel();
+        CancelButton = new javax.swing.JButton();
+        CheckoutButton = new javax.swing.JButton();
+        Voucher1Label1 = new javax.swing.JLabel();
+        Voucher1Label2 = new javax.swing.JLabel();
+        TransaksiHeader = new javax.swing.JLabel();
+        SubtotalUndernum = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(1280, 720));
+        setPreferredSize(new java.awt.Dimension(1300, 760));
 
         TopPanel.setBackground(new java.awt.Color(12, 185, 168));
         TopPanel.setPreferredSize(new java.awt.Dimension(1280, 65));
@@ -47,39 +147,303 @@ public class MainPanel extends javax.swing.JFrame {
         CartButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/shopping-cart.png"))); // NOI18N
         CartButton.setFocusPainted(false);
         CartButton.setFocusable(false);
+        CartButton.addActionListener(this::CartButtonActionPerformed);
         TopPanel.add(CartButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1212, 12, 41, 41));
         CartButton.putClientProperty(FlatClientProperties.STYLE, "borderWidth: 0; focusColor: #0cb9a8");
 
+        BackButton.setBackground(new java.awt.Color(12, 185, 168));
+        BackButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/arrow_left_fill.png"))); // NOI18N
+        BackButton.setFocusPainted(false);
+        BackButton.setFocusable(false);
+        BackButton.addActionListener(this::BackButtonActionPerformed);
+        TopPanel.add(BackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1212, 12, 41, 41));
+        BackButton.putClientProperty(FlatClientProperties.STYLE, "borderWidth: 0; focusColor: #0cb9a8");
+        BackButton.setVisible(false);
+
         getContentPane().add(TopPanel, java.awt.BorderLayout.NORTH);
 
-        CardMainPanel.setPreferredSize(new java.awt.Dimension(1280, 720));
+        CardMainPanel.setPreferredSize(new java.awt.Dimension(1255, 640));
         CardMainPanel.setLayout(new java.awt.CardLayout());
 
         ShoppingPanel.setBackground(new java.awt.Color(255, 255, 255));
         ShoppingPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        ShoppingTopPanel.setBackground(new java.awt.Color(255, 255, 255));
-        ShoppingTopPanel.setPreferredSize(new java.awt.Dimension(1280, 50));
-        ShoppingTopPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        FilterPanelMenu.setBackground(new java.awt.Color(255, 255, 255));
+        FilterPanelMenu.setPreferredSize(new java.awt.Dimension(150, 50));
+        FilterPanelMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        FilterHargaSpinner.setPreferredSize(new java.awt.Dimension(100, 30));
+        FilterPanelMenu.add(FilterHargaSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 12, -1, 25));
+        FilterHargaSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                Object value = ((JSpinner) e.getSource()).getValue();
+                CurFilterHarga = Double.parseDouble(value.toString());
+                System.out.println(CurFilterHarga);
+            }
+        });
+
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Harga");
+        jLabel2.setPreferredSize(new java.awt.Dimension(15, 10));
+        FilterPanelMenu.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 12, 50, 25));
+
+        ShoppingPanel.add(FilterPanelMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 45, 150, 50));
+        FilterPanelMenu.setVisible(false);
+
+        ShoppingTablePanel.setBackground(new java.awt.Color(255, 255, 255));
+        ShoppingTablePanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        TableBarang.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Data", "No", "Nama", "Harga", "Stok", "Qty", "Total"
+            }
+        ));
+        TableBarang.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jScrollPane1.setViewportView(TableBarang);
+        if (TableBarang.getColumnModel().getColumnCount() > 0) {
+            TableBarang.getColumnModel().getColumn(0).setMinWidth(0);
+            TableBarang.getColumnModel().getColumn(0).setPreferredWidth(0);
+            TableBarang.getColumnModel().getColumn(0).setMaxWidth(0);
+            TableBarang.getColumnModel().getColumn(1).setPreferredWidth(60);
+            TableBarang.getColumnModel().getColumn(2).setPreferredWidth(620);
+            TableBarang.getColumnModel().getColumn(3).setPreferredWidth(200);
+            TableBarang.getColumnModel().getColumn(4).setPreferredWidth(80);
+            TableBarang.getColumnModel().getColumn(5).setPreferredWidth(80);
+            TableBarang.getColumnModel().getColumn(6).setPreferredWidth(200);
+        }
+
+        ShoppingTablePanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1230, 520));
+
+        PageNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        PageNumberLabel.setText("0 / 0");
+        ShoppingTablePanel.add(PageNumberLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(565, 540, 100, 25));
+
+        NextButton.setText("Next");
+        NextButton.setPreferredSize(new java.awt.Dimension(100, 30));
+        NextButton.addActionListener(this::NextButtonActionPerformed);
+        ShoppingTablePanel.add(NextButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(665, 540, -1, -1));
+
+        PreviousButton.setText("Previous");
+        PreviousButton.setPreferredSize(new java.awt.Dimension(100, 30));
+        PreviousButton.addActionListener(this::PreviousButtonActionPerformed);
+        ShoppingTablePanel.add(PreviousButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(465, 540, -1, -1));
+
+        AddToCartButton.setText("Add to Cart");
+        AddToCartButton.addActionListener(this::AddToCartButtonActionPerformed);
+        ShoppingTablePanel.add(AddToCartButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1110, 540, 120, 40));
+
+        ShoppingPanel.add(ShoppingTablePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 60, 1230, 580));
+
+        SearchField.setForeground(new java.awt.Color(153, 153, 153));
+        SearchField.setText("Type to search for item...");
+        SearchField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                SearchFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                SearchFieldFocusLost(evt);
+            }
+        });
+        SearchField.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                SearchFieldMouseClicked(evt);
+            }
+        });
+        ShoppingPanel.add(SearchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, 720, 30));
+
+        LabelResult.setText("Showing n result of x possible");
+        ShoppingPanel.add(LabelResult, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 20, -1, -1));
 
         FilterButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/filter.png"))); // NOI18N
         FilterButton.setMaximumSize(new java.awt.Dimension(55, 55));
         FilterButton.setMinimumSize(new java.awt.Dimension(55, 55));
         FilterButton.setPreferredSize(new java.awt.Dimension(35, 35));
-        ShoppingTopPanel.add(FilterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 10, 35, 35));
+        FilterButton.addActionListener(this::FilterButtonActionPerformed);
+        ShoppingPanel.add(FilterButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 10, 35, 35));
         FilterButton.putClientProperty(FlatClientProperties.STYLE, "borderWidth: 0");
 
-        jTextField1.setText("jTextField1");
-        ShoppingTopPanel.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, 720, 30));
-
-        ShoppingPanel.add(ShoppingTopPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 50));
-
         CardMainPanel.add(ShoppingPanel, "card2");
+
+        KasirPanel.setBackground(new java.awt.Color(255, 255, 255));
+        KasirPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jScrollPane3.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(700, 500));
+
+        TabelCheckout.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Nama", "Harga", "Kuantitas", "Subtotal"
+            }
+        ));
+        TabelCheckout.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        TabelCheckout.setPreferredSize(new java.awt.Dimension(700, 500));
+        TabelCheckout.setShowGrid(false);
+        jScrollPane3.setViewportView(TabelCheckout);
+        if (TabelCheckout.getColumnModel().getColumnCount() > 0) {
+            TabelCheckout.getColumnModel().getColumn(0).setPreferredWidth(100);
+            TabelCheckout.getColumnModel().getColumn(1).setPreferredWidth(40);
+            TabelCheckout.getColumnModel().getColumn(2).setPreferredWidth(5);
+            TabelCheckout.getColumnModel().getColumn(3).setPreferredWidth(40);
+        }
+
+        KasirPanel.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 65, 700, 500));
+
+        TGLLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        TGLLabel.setText("TGL:");
+        KasirPanel.add(TGLLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 40, -1, -1));
+
+        ResiLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        ResiLabel.setText("NO RESI:");
+        KasirPanel.add(ResiLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, -1, -1));
+
+        SubtotalLabelUnder.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        SubtotalLabelUnder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        SubtotalLabelUnder.setText("Subtotal:");
+        KasirPanel.add(SubtotalLabelUnder, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 580, -1, -1));
+
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        SubtotalLabelRightnum.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        SubtotalLabelRightnum.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        SubtotalLabelRightnum.setText("RP 0.000.000,00");
+        jPanel1.add(SubtotalLabelRightnum, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 30, 150, -1));
+
+        VoucherComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel1.add(VoucherComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, 120, 25));
+
+        VoucherField.setText("...");
+        jPanel1.add(VoucherField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 150, 120, 25));
+
+        TotalLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        TotalLabel.setText("Total:");
+        jPanel1.add(TotalLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 120, -1));
+
+        Voucher1Label.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        Voucher1Label.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        Voucher1Label.setText("RP -0.000.000,00");
+        jPanel1.add(Voucher1Label, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 90, 150, -1));
+
+        TotalLabelNum.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        TotalLabelNum.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        TotalLabelNum.setText("RP 0.000.000,00");
+        jPanel1.add(TotalLabelNum, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 330, 150, -1));
+
+        SubtotalLabelRight.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        SubtotalLabelRight.setText("Subtotal:");
+        jPanel1.add(SubtotalLabelRight, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 120, -1));
+
+        Voucher2Label.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        Voucher2Label.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        Voucher2Label.setText("RP -0.000.000,00");
+        jPanel1.add(Voucher2Label, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 150, 150, -1));
+
+        CancelButton.setBackground(new java.awt.Color(12, 181, 80));
+        CancelButton.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        CancelButton.setForeground(new java.awt.Color(255, 255, 255));
+        CancelButton.setText("Checkout");
+        jPanel1.add(CancelButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 400, 350, 50));
+
+        CheckoutButton.setBackground(new java.awt.Color(153, 0, 51));
+        CheckoutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/x.png"))); // NOI18N
+        jPanel1.add(CheckoutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 50, 50));
+
+        Voucher1Label1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        Voucher1Label1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        Voucher1Label1.setText("-n%");
+        jPanel1.add(Voucher1Label1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 90, 50, -1));
+
+        Voucher1Label2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        Voucher1Label2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        Voucher1Label2.setText("-n%");
+        jPanel1.add(Voucher1Label2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 150, 50, -1));
+
+        KasirPanel.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 65, 450, 500));
+
+        TransaksiHeader.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        TransaksiHeader.setText("Transaksi");
+        KasirPanel.add(TransaksiHeader, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 10, -1, -1));
+
+        SubtotalUndernum.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        SubtotalUndernum.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        SubtotalUndernum.setText("RP 0.000.000,00");
+        KasirPanel.add(SubtotalUndernum, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 580, -1, -1));
+
+        CardMainPanel.add(KasirPanel, "card2");
 
         getContentPane().add(CardMainPanel, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void SearchFieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SearchFieldMouseClicked
+        SearchField.setText("");
+    }//GEN-LAST:event_SearchFieldMouseClicked
+
+    private void SearchFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_SearchFieldFocusLost
+        if (SearchField.getText().isBlank()){
+            SearchField.setForeground(new Color(153, 153, 153));
+            SearchField.setText(SEARCHPLACEHOLDER);
+        }
+    }//GEN-LAST:event_SearchFieldFocusLost
+
+    private void SearchFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_SearchFieldFocusGained
+        SearchField.setText("");
+        SearchField.setForeground(new Color(0, 0, 0));
+    }//GEN-LAST:event_SearchFieldFocusGained
+
+    private void AddToCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddToCartButtonActionPerformed
+        ListBarangTemp.forEach(Dp -> {
+            System.out.println(Dp.getBarang().getNama() +" "+Dp.getJumlah());
+
+        });
+    }//GEN-LAST:event_AddToCartButtonActionPerformed
+
+    private void PreviousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviousButtonActionPerformed
+        getTableData();
+        if (1 < CurPage) {
+            CurPage --;
+        }
+        loadPage();
+    }//GEN-LAST:event_PreviousButtonActionPerformed
+
+    private void NextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextButtonActionPerformed
+        getTableData();
+        if (CurPage < TotalPage) {
+            CurPage ++;
+        }
+        loadPage();
+    }//GEN-LAST:event_NextButtonActionPerformed
+
+    private void FilterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FilterButtonActionPerformed
+        if (FilterPanelMenu.isVisible()) {
+            FilterPanelMenu.setVisible(false);
+        } else {
+            FilterPanelMenu.setVisible(true);
+        }
+    }//GEN-LAST:event_FilterButtonActionPerformed
+
+    private void CartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CartButtonActionPerformed
+        CartButton.setVisible(false);
+        ShoppingPanel.setVisible(false);
+        BackButton.setVisible(true);
+        KasirPanel.setVisible(true);
+    }//GEN-LAST:event_CartButtonActionPerformed
+
+    private void BackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButtonActionPerformed
+        CartButton.setVisible(true);
+        ShoppingPanel.setVisible(true);
+        BackButton.setVisible(false);
+        KasirPanel.setVisible(false);
+    }//GEN-LAST:event_BackButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -107,12 +471,44 @@ public class MainPanel extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton AddToCartButton;
+    private javax.swing.JButton BackButton;
+    private javax.swing.JButton CancelButton;
     private javax.swing.JPanel CardMainPanel;
     private javax.swing.JButton CartButton;
+    private javax.swing.JButton CheckoutButton;
     private javax.swing.JButton FilterButton;
+    private javax.swing.JSpinner FilterHargaSpinner;
+    private javax.swing.JPanel FilterPanelMenu;
+    private javax.swing.JPanel KasirPanel;
+    private javax.swing.JLabel LabelResult;
+    private javax.swing.JButton NextButton;
+    private javax.swing.JLabel PageNumberLabel;
+    private javax.swing.JButton PreviousButton;
+    private javax.swing.JLabel ResiLabel;
+    private javax.swing.JTextField SearchField;
     private javax.swing.JPanel ShoppingPanel;
-    private javax.swing.JPanel ShoppingTopPanel;
+    private javax.swing.JPanel ShoppingTablePanel;
+    private javax.swing.JLabel SubtotalLabelRight;
+    private javax.swing.JLabel SubtotalLabelRightnum;
+    private javax.swing.JLabel SubtotalLabelUnder;
+    private javax.swing.JLabel SubtotalUndernum;
+    private javax.swing.JLabel TGLLabel;
+    private javax.swing.JTable TabelCheckout;
+    private javax.swing.JTable TableBarang;
     private javax.swing.JPanel TopPanel;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel TotalLabel;
+    private javax.swing.JLabel TotalLabelNum;
+    private javax.swing.JLabel TransaksiHeader;
+    private javax.swing.JLabel Voucher1Label;
+    private javax.swing.JLabel Voucher1Label1;
+    private javax.swing.JLabel Voucher1Label2;
+    private javax.swing.JLabel Voucher2Label;
+    private javax.swing.JComboBox<String> VoucherComboBox;
+    private javax.swing.JTextField VoucherField;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     // End of variables declaration//GEN-END:variables
 }

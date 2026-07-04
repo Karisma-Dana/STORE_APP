@@ -3,10 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.store_app.controller;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import java.security.*;
-import java.util.Base64;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 /**
@@ -14,8 +10,6 @@ import java.beans.PropertyChangeSupport;
  * @author Flame
  */
 public class userController {
-    private static final int ITERATIONS = 10000;
-    private static final int KEY_LENGTH = 256;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean signInSignal = false;
     

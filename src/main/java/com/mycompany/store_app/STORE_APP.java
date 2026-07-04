@@ -18,12 +18,6 @@ import java.beans.PropertyChangeEvent;
  */
 public class STORE_APP {
     
-
-    public void main(String[] args) {
-//    file java untuk pengecekan setiap function yang diperlukan. 
-//    NOTE : DILARANG MENAMBAHKAN FUNCTION LAIN SELAIN UNTUK TESTING PRODUCT. 
-        
-        
     public static void main(String[] args) {
         FlatLightLaf.setup();
         MainPanel mainpanel = new MainPanel();
@@ -33,13 +27,10 @@ public class STORE_APP {
         SwingUtilities.invokeLater(() -> {
             userController form = new userController();
 
-            // **** SUBSCRIBE to the event system ****
             form.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-                // This method runs automatically whenever the boolean changes!
                 if ("signedIn".equals(evt.getPropertyName())) {
                     boolean receivedBool = (boolean) evt.getNewValue();
 
-                    // **** DO YOUR MAIN LOGIC HERE ****
                     System.out.println("Main function received signal: " + receivedBool);
                     if (receivedBool) {
                         System.out.println("-> Executing TRUE logic");
