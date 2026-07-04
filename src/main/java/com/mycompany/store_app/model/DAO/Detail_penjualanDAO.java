@@ -117,11 +117,6 @@ public class Detail_penjualanDAO {
         }catch(SQLException e){
             System.out.println("Gagal membaca detail penjualan : " + e.getMessage());
         }
-        
-        
-        
-        
-        
         return listDetail;
     }
     
@@ -199,11 +194,7 @@ public class Detail_penjualanDAO {
         }catch(SQLException e){
             System.out.println("Gagal membaca detail penjualan : " + e.getMessage());
         }
-        
-        
-        
-        
-        
+       
         return listDetail;
     }
     

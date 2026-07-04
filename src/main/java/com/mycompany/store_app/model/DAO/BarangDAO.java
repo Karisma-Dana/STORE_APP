@@ -167,6 +167,35 @@ public class BarangDAO {
     }
     
     
+    public List<Barang> search(String nama){
+        List<Barang> listBarang = new ArrayList<>();
+        String querySQL = "SELECT * FROM barang WHERE nama LIKE ?";
+        
+        try (Connection conn = Koneksi.getKoneksi();
+                PreparedStatement ps = conn.prepareStatement(querySQL)){
+            
+            ps.setString(1, "%" + nama + "%");
+            
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next()){
+                    Barang barang = new Barang();
+                    barang.setId(rs.getInt("id"));
+                    barang.setNama(rs.getString("nama"));
+                    barang.setHarga(rs.getDouble("harga"));
+                    barang.setStok(rs.getInt("stok"));
+                    
+                    listBarang.add(barang);
+                }
+            }
+            
+        }catch(SQLException e){
+            System.out.println("Gagal mencari data dosen: " + e.getMessage());
+        }
+        
+        return listBarang;
+    }
+    
+    
     
     
     
