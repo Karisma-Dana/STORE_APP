@@ -198,8 +198,8 @@ public class UpdateBarang extends javax.swing.JFrame {
         // TODO add your handling code here:
        
         controller.delete(dataBarang.getId());
-        if (this.panelUtama != null){
-            this.panelUtama.getTableData("");
+        if (listener != null) {
+            listener.onConfirmUpdate();
         }
         this.dispose();
         

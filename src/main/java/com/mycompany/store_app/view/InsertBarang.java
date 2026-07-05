@@ -64,7 +64,6 @@ public class InsertBarang extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("INSERT BARANG");
 
         txtBarang.addActionListener(this::txtBarangActionPerformed);
@@ -72,21 +71,17 @@ public class InsertBarang extends javax.swing.JFrame {
         spinerStok.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
         btnInsert.setBackground(new java.awt.Color(0, 255, 156));
-        btnInsert.setForeground(new java.awt.Color(0, 0, 0));
         btnInsert.setText("INSERT");
         btnInsert.setBorderPainted(false);
         btnInsert.addActionListener(this::btnInsertActionPerformed);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Nama Barang");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Harga");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Stok");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

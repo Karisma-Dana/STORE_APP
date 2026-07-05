@@ -32,7 +32,6 @@ public class Detail_penjualanDAO {
     private final BarangDAO barangDAO = new BarangDAO();
     
     public void insert(Detail_penjualan dp){
-        
         String querySQL = "INSERT INTO detail_penjualan (id_nota, id_barang, jumlah, subtotal) VALUES (?, ?, ?, ?)";
         try(Connection conn = Koneksi.getKoneksi();
             PreparedStatement ps = conn.prepareStatement(querySQL)){

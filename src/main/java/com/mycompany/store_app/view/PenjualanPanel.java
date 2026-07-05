@@ -4,10 +4,11 @@
  */
 package com.mycompany.store_app.view;
 import com.mycompany.store_app.controller.PenjualanController;         
-import com.mycompany.store_app.controller.DetailPenjualanCotroller; 
+import com.mycompany.store_app.controller.DetailPenjualanController; 
 import com.mycompany.store_app.model.entity.Barang;
 import com.mycompany.store_app.model.entity.Detail_penjualan;
 import com.mycompany.store_app.model.entity.Penjualan;
+import java.text.DecimalFormat;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -23,8 +24,8 @@ import javax.swing.text.DocumentFilter;
 public class PenjualanPanel extends javax.swing.JPanel {
     
     private PenjualanController pjController;
-    private DetailPenjualanCotroller dpController;
-    
+    private DetailPenjualanController dpController;
+    private DecimalFormat df = new DecimalFormat("#,##0.##");
 
     /**
      * Creates new form PembelianPanel
@@ -35,7 +36,7 @@ public class PenjualanPanel extends javax.swing.JPanel {
         
         
         this.pjController = new PenjualanController();
-        this.dpController = new DetailPenjualanCotroller();
+        this.dpController = new DetailPenjualanController();
      
         updateTableNota("");
     }
@@ -246,7 +247,7 @@ public class PenjualanPanel extends javax.swing.JPanel {
                     dp.getId(),
                     barang.getNama(),
                     dp.getJumlah(),
-                    dp.getSubtotal()
+                    "RP "+df.format(dp.getSubtotal())
                 };
                 modelDetail.addRow(rowData);
             }
@@ -282,7 +283,7 @@ public class PenjualanPanel extends javax.swing.JPanel {
             for (Penjualan pj : listPenjualan){
                 Object[] rowData = {
                     pj.getId_nota(),
-                    pj.getTotal(),
+                    "RP "+ df.format(pj.getTotal()),
                     pj.getTanggal()
                 };
                 modelNota.addRow(rowData);
@@ -292,7 +293,7 @@ public class PenjualanPanel extends javax.swing.JPanel {
             Penjualan pj = pjController.getDatabyID(Integer.parseInt(keyword));
             Object[] rowData = {
                 pj.getId_nota(),
-                pj.getTotal(),
+                "RP "+ df.format(pj.getTotal()),
                 pj.getTanggal()
             };
             modelNota.addRow(rowData);

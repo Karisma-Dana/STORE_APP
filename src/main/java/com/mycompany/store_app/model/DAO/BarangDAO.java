@@ -145,7 +145,6 @@ public class BarangDAO {
     return listBarang;
 }
     
-    
     public Barang getById(int id_barang){
         Barang barang = null;
         String querySQL = "SELECT * FROM barang WHERE id = ?";

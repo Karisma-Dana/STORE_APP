@@ -4,14 +4,16 @@
  */
 package com.mycompany.store_app.view;
 
-import static com.mycompany.store_app.view.MainPanel.main;
-
 
 /**
  *
  * @author karis
  */
 public class AdminPanel extends javax.swing.JFrame {
+    private AdminPanel.ListenerAdminPanel listener;
+    public interface ListenerAdminPanel{
+        void onLogOut();
+    }
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AdminPanel.class.getName());
     
@@ -23,7 +25,9 @@ public class AdminPanel extends javax.swing.JFrame {
     /**
      * Creates new form AdminPanel
      */
-    public AdminPanel() {
+    public AdminPanel(){}
+    public AdminPanel(ListenerAdminPanel listener) {
+        this.listener = listener;
         initComponents();
         
         java.awt.Dimension sizeMain = main.getPreferredSize();
@@ -37,7 +41,6 @@ public class AdminPanel extends javax.swing.JFrame {
         pp.setVisible(false);
         bp.setVisible(false);       
         vp.setVisible(false);
-        
         
     }
     
@@ -59,11 +62,10 @@ public class AdminPanel extends javax.swing.JFrame {
         btnBarang = new javax.swing.JButton();
         btnVoucher = new javax.swing.JButton();
         btnPembelian = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        LogOutButton = new javax.swing.JButton();
         main = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1300, 760));
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
         jPanel1.setPreferredSize(new java.awt.Dimension(200, 760));
@@ -87,11 +89,11 @@ public class AdminPanel extends javax.swing.JFrame {
         btnPembelian.setText("PEMBELIAN");
         btnPembelian.addActionListener(this::btnPembelianActionPerformed);
 
-        jButton5.setBackground(new java.awt.Color(255, 0, 82));
-        jButton5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton5.setText("LOG OUT");
-        jButton5.setBorderPainted(false);
-        jButton5.addActionListener(this::jButton5ActionPerformed);
+        LogOutButton.setBackground(new java.awt.Color(255, 0, 82));
+        LogOutButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        LogOutButton.setText("LOG OUT");
+        LogOutButton.setBorderPainted(false);
+        LogOutButton.addActionListener(this::LogOutButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -102,7 +104,7 @@ public class AdminPanel extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(25, 25, 25)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(LogOutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnPembelian, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnVoucher, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -125,8 +127,8 @@ public class AdminPanel extends javax.swing.JFrame {
                 .addComponent(btnVoucher, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnPembelian, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 311, Short.MAX_VALUE)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 308, Short.MAX_VALUE)
+                .addComponent(LogOutButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(47, 47, 47))
         );
 
@@ -140,9 +142,10 @@ public class AdminPanel extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+    private void LogOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogOutButtonActionPerformed
+        listener.onLogOut();
+        this.dispose();
+    }//GEN-LAST:event_LogOutButtonActionPerformed
 
     private void btnBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBarangActionPerformed
         // TODO add your handling code here:
@@ -207,11 +210,11 @@ public class AdminPanel extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton LogOutButton;
     private javax.swing.JButton btnBarang;
     private javax.swing.JButton btnDashboard;
     private javax.swing.JButton btnPembelian;
     private javax.swing.JButton btnVoucher;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel main;

@@ -11,6 +11,7 @@ import com.mycompany.store_app.controller.VoucherController;
 import com.mycompany.store_app.controller.UserController;
 import com.mycompany.store_app.model.entity.Penjualan;
 import com.mycompany.store_app.model.entity.User;
+import java.text.DecimalFormat;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -24,6 +25,7 @@ public class AdminMainPanel extends javax.swing.JPanel {
     private final VoucherController vc;
     private final UserController uc;
     private final PenjualanController pc;
+    private DecimalFormat df = new DecimalFormat("#,##0.##");
     /**
      * Creates new form BarangPanel
      */
@@ -51,7 +53,7 @@ public class AdminMainPanel extends javax.swing.JPanel {
         
         txtMember.setText(String.valueOf(member));
         txtJumlahVoucer.setText(String.valueOf(jumlahVoucher));
-        txtOmset.setText(String.valueOf(omset));
+        txtOmset.setText("RP "+df.format(omset));
         txtJumlahBarang.setText(String.valueOf(jumlahBarang));
         
         
@@ -66,7 +68,7 @@ public class AdminMainPanel extends javax.swing.JPanel {
             Object[] rowData = {
                 counter,
                 penjualan.getId_nota(),
-                penjualan.getTotal(),
+                "RP "+df.format(penjualan.getTotal()),
                 penjualan.getTanggal()
             
             };
@@ -74,6 +76,7 @@ public class AdminMainPanel extends javax.swing.JPanel {
             counter++;
         }
     }
+    
     public void updateTableUser(){
         DefaultTableModel modelUser = (DefaultTableModel) tableUser.getModel();
         modelUser.setRowCount(0);
@@ -104,10 +107,10 @@ public class AdminMainPanel extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         Omset = new javax.swing.JLabel();
-        txtMember = new javax.swing.JLabel();
+        txtOmset = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         Member = new javax.swing.JLabel();
-        txtOmset = new javax.swing.JLabel();
+        txtMember = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         txtJumlahBarang = new javax.swing.JLabel();
@@ -135,10 +138,10 @@ public class AdminMainPanel extends javax.swing.JPanel {
         Omset.setText("Omset");
         jPanel1.add(Omset, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
-        txtMember.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
-        txtMember.setForeground(new java.awt.Color(255, 255, 255));
-        txtMember.setText("1");
-        jPanel1.add(txtMember, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
+        txtOmset.setFont(new java.awt.Font("Segoe UI Black", 0, 24)); // NOI18N
+        txtOmset.setForeground(new java.awt.Color(255, 255, 255));
+        txtOmset.setText("1");
+        jPanel1.add(txtOmset, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, 280, -1));
 
         jPanel2.setBackground(new java.awt.Color(155, 89, 182));
         jPanel2.setPreferredSize(new java.awt.Dimension(254, 140));
@@ -149,10 +152,10 @@ public class AdminMainPanel extends javax.swing.JPanel {
         Member.setText("Member");
         jPanel2.add(Member, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, -1, -1));
 
-        txtOmset.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
-        txtOmset.setForeground(new java.awt.Color(255, 255, 255));
-        txtOmset.setText("1");
-        jPanel2.add(txtOmset, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
+        txtMember.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
+        txtMember.setForeground(new java.awt.Color(255, 255, 255));
+        txtMember.setText("1");
+        jPanel2.add(txtMember, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
 
         jPanel3.setBackground(new java.awt.Color(74, 144, 226));
         jPanel3.setPreferredSize(new java.awt.Dimension(254, 140));
@@ -182,7 +185,6 @@ public class AdminMainPanel extends javax.swing.JPanel {
         txtJumlahVoucer.setText("1");
         jPanel4.add(txtJumlahVoucer, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 190, -1));
 
-        tableNota.setBackground(new java.awt.Color(255, 255, 255));
         tableNota.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -199,7 +201,6 @@ public class AdminMainPanel extends javax.swing.JPanel {
             tableNota.getColumnModel().getColumn(0).setMaxWidth(50);
         }
 
-        tableUser.setBackground(new java.awt.Color(255, 255, 255));
         tableUser.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},

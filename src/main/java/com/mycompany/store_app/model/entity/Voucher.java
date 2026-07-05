@@ -38,7 +38,10 @@ public class Voucher {
     }
     
     
-    
+    @Override
+    public String toString() {
+        return kode_voucher + " (" + jenis_voucher + " - " + diskon + "%)";
+    }
 
     public int getId() {
         return id;
