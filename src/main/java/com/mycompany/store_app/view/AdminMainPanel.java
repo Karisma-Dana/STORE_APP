@@ -6,6 +6,7 @@ package com.mycompany.store_app.view;
 
 import com.mycompany.store_app.controller.BarangController;
 import com.mycompany.store_app.controller.PenjualanController;
+import com.mycompany.store_app.controller.UserController;
 import com.mycompany.store_app.controller.VoucherController;
 import com.mycompany.store_app.controller.UserController;
 import com.mycompany.store_app.model.entity.Penjualan;
