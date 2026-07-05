@@ -41,14 +41,12 @@ public class UserController {
     public UserController(){}
     
     public void signalUserSigned(){
-        System.out.println("com.mycompany.store_app.controller.UserController.signalUserSigned()");
         pcs.firePropertyChange("signedUser", null, signedUser);
     }
     
     public User signIn(User user){
         if(!userdao.checkEmail_unik(user.getEmail())){
             signedUser = userdao.login(user.getEmail(), user.getPassword());
-            System.out.println("com.mycompany.store_app.controller.UserController.signIn()");
             signalUserSigned();
         }
         return null;

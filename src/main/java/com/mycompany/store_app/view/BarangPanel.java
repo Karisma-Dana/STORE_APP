@@ -5,7 +5,12 @@
 package com.mycompany.store_app.view;
 import com.mycompany.store_app.controller.BarangController;
 import com.mycompany.store_app.model.entity.Barang;
+import static com.mycompany.store_app.view.MainPanel.addTextListener;
+import java.awt.Color;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -13,16 +18,25 @@ import javax.swing.table.DefaultTableModel;
  * @author karis
  */
 public class BarangPanel extends javax.swing.JPanel {
-    
     private final BarangController controller;
-
+    final private String SEARCHPLACEHOLDER = "Type to search for item...";
+    private int EntryPerPage = 25;
+    private int CurPage = 1;
+    private int TotalPage;
+    private int CurEntryPerPage = 0;
+    private List<Barang> TableDataList = new ArrayList();
     /**
      * Creates new form BarangPanel
      */
     public BarangPanel() {
         initComponents();
         this.controller = new BarangController();
-        updateTableBarang("");
+        addTextListener(txtSearch, newtext -> {
+            getTableData(retrieveSearch());
+            loadPage();
+        });
+        getTableData("");
+        loadPage();
     }
 
     /**
@@ -40,7 +54,9 @@ public class BarangPanel extends javax.swing.JPanel {
         tableBarang = new javax.swing.JTable();
         btnTambahBarang = new javax.swing.JToggleButton();
         txtSearch = new javax.swing.JTextField();
-        btnSearch = new javax.swing.JButton();
+        NextButton = new javax.swing.JButton();
+        PageNumberLabel = new javax.swing.JLabel();
+        PreviousButton = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(245, 247, 251));
 
@@ -52,20 +68,11 @@ public class BarangPanel extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tableBarang.setBackground(new java.awt.Color(255, 255, 255));
         tableBarang.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         tableBarang.setForeground(new java.awt.Color(51, 51, 51));
         tableBarang.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"3", "asu", "23000", "4"},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Id", "Nama", "Harga", "Stok"
@@ -78,30 +85,50 @@ public class BarangPanel extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tableBarang);
         if (tableBarang.getColumnModel().getColumnCount() > 0) {
-            tableBarang.getColumnModel().getColumn(0).setMaxWidth(60);
+            tableBarang.getColumnModel().getColumn(0).setPreferredWidth(90);
+            tableBarang.getColumnModel().getColumn(0).setMaxWidth(90);
+            tableBarang.getColumnModel().getColumn(1).setPreferredWidth(200);
+            tableBarang.getColumnModel().getColumn(2).setPreferredWidth(180);
+            tableBarang.getColumnModel().getColumn(2).setMaxWidth(180);
+            tableBarang.getColumnModel().getColumn(3).setPreferredWidth(90);
+            tableBarang.getColumnModel().getColumn(3).setMaxWidth(90);
         }
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 70, 1007, 569));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 70, 1007, 520));
 
         btnTambahBarang.setBackground(new java.awt.Color(0, 255, 156));
         btnTambahBarang.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnTambahBarang.setForeground(new java.awt.Color(0, 0, 0));
         btnTambahBarang.setText("Tambah Barang ");
         btnTambahBarang.setBorderPainted(false);
         btnTambahBarang.addActionListener(this::btnTambahBarangActionPerformed);
         jPanel1.add(btnTambahBarang, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 19, 210, 32));
 
-        txtSearch.setBackground(new java.awt.Color(255, 255, 255));
+        txtSearch.setForeground(new java.awt.Color(153, 153, 153));
+        txtSearch.setText("Type to search for item...");
         txtSearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        txtSearch.addActionListener(this::txtSearchActionPerformed);
-        jPanel1.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 19, 296, 32));
+        txtSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtSearchFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtSearchFocusLost(evt);
+            }
+        });
+        jPanel1.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 19, 400, 32));
 
-        btnSearch.setBackground(new java.awt.Color(0, 255, 156));
-        btnSearch.setForeground(new java.awt.Color(0, 0, 0));
-        btnSearch.setText("Search");
-        btnSearch.setBorderPainted(false);
-        btnSearch.addActionListener(this::btnSearchActionPerformed);
-        jPanel1.add(btnSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(922, 19, 104, 33));
+        NextButton.setText("Next");
+        NextButton.setPreferredSize(new java.awt.Dimension(100, 30));
+        NextButton.addActionListener(this::NextButtonActionPerformed);
+        jPanel1.add(NextButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 610, -1, -1));
+
+        PageNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        PageNumberLabel.setText("0 / 0");
+        jPanel1.add(PageNumberLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 610, 100, 25));
+
+        PreviousButton.setText("Previous");
+        PreviousButton.setPreferredSize(new java.awt.Dimension(100, 30));
+        PreviousButton.addActionListener(this::PreviousButtonActionPerformed);
+        jPanel1.add(PreviousButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 610, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -125,26 +152,28 @@ public class BarangPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private String retrieveSearch(){
+        if (txtSearch.getText().equals("Type to search for item...")){
+            return "";
+        } else {
+            return txtSearch.getText();
+        }
+    }
+        
     private void btnTambahBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahBarangActionPerformed
         // TODO add your handling code here:
         
-        InsertBarang panel = new InsertBarang(this);
+        InsertBarang panel = new InsertBarang(this, new InsertBarang.InsertBarangListener() {
+                @Override
+                public void onConfirmUpdate() {
+                    getTableData(retrieveSearch());
+                    loadPage();
+                }
+        });
         panel.setLocationRelativeTo(this);
         panel.setVisible(true);
         
     }//GEN-LAST:event_btnTambahBarangActionPerformed
-
-    private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtSearchActionPerformed
-
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
-        String keyword = txtSearch.getText().trim();
-        updateTableBarang(keyword);
-        
-        
-    }//GEN-LAST:event_btnSearchActionPerformed
 
     private void tableBarangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableBarangMouseClicked
         // TODO add your handling code here:
@@ -154,52 +183,84 @@ public class BarangPanel extends javax.swing.JPanel {
             int idBarang = Integer.parseInt(tableBarang.getValueAt(selectedRow, 0).toString());
             Barang barang = controller.ambilBarangById(idBarang);
             
-            UpdateBarang panel = new UpdateBarang(this);
+            UpdateBarang panel = new UpdateBarang(this, new UpdateBarang.UpdateBarangListener() {
+                @Override
+                public void onConfirmUpdate() {
+                    getTableData(retrieveSearch());
+                    loadPage();
+                }
+            });
             panel.getData(barang);
             panel.setLocationRelativeTo(this);
             panel.setVisible(true);
         }
         
-        
-        
     }//GEN-LAST:event_tableBarangMouseClicked
 
-    public void updateTableBarang(String keyword){
-        if (keyword == null || keyword.isEmpty()){
-            List<Barang> listBarang = controller.ambilSemuaBarang();
-             
-            DefaultTableModel modelBarang = (DefaultTableModel) tableBarang.getModel();
-            modelBarang.setRowCount(0);
-            
-            for (Barang barang : listBarang){
-                Object[] rowData = {
-                    barang.getId(),
-                    barang.getNama(),
-                    barang.getHarga(),
-                    barang.getStok()
-                };
-                modelBarang.addRow(rowData);
-            }
-        }else{
-            List<Barang> listBarang = controller.searchByName(keyword);
-             
-            DefaultTableModel modelBarang = (DefaultTableModel) tableBarang.getModel();
-            modelBarang.setRowCount(0);
-            
-            for (Barang barang : listBarang){
-                Object[] rowData = {
-                    barang.getId(),
-                    barang.getNama(),
-                    barang.getHarga(),
-                    barang.getStok()
-                };
-                modelBarang.addRow(rowData);
+    private void txtSearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSearchFocusGained
+        txtSearch.setText("");
+        txtSearch.setForeground(new Color(0, 0, 0));
+    }//GEN-LAST:event_txtSearchFocusGained
+
+    private void txtSearchFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSearchFocusLost
+        if (txtSearch.getText().isBlank()){
+            txtSearch.setForeground(new Color(153, 153, 153));
+            txtSearch.setText(SEARCHPLACEHOLDER);
+        }
+    }//GEN-LAST:event_txtSearchFocusLost
+
+    private void NextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextButtonActionPerformed
+        if (CurPage < TotalPage) {
+            CurPage ++;
+        }
+        getTableData(retrieveSearch());
+        loadPage();
+    }//GEN-LAST:event_NextButtonActionPerformed
+
+    private void PreviousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviousButtonActionPerformed
+        if (1 < CurPage) {
+            CurPage --;
+        }
+        getTableData(retrieveSearch());
+        loadPage();
+    }//GEN-LAST:event_PreviousButtonActionPerformed
+    
+    private void newRow(DefaultTableModel modelBarang, Barang barang){
+        DecimalFormat df = new DecimalFormat("#,##0.##");
+        Object[] rowData = {
+            barang.getId(),
+            barang.getNama(),
+            "RP "+df.format(barang.getHarga()),
+            barang.getStok()
+        };
+        modelBarang.addRow(rowData);
+    }
+    
+    public void loadPage(){
+        DefaultTableModel modelBarang = (DefaultTableModel) tableBarang.getModel();
+        modelBarang.setRowCount(0);
+        
+        for (Barang barang : TableDataList){
+            newRow(modelBarang, barang);
+        }
+    }
+    
+    public void getTableData(String keyword){
+        TotalPage = (int) Math.ceil((double) controller.count(0, retrieveSearch()) / EntryPerPage);
+        if (TotalPage < CurPage) {
+            CurPage = TotalPage;
+            if (CurPage <= 0) {
+                CurPage = 1;
             }
         }
+        TableDataList = controller.ambilSemuaBarang(EntryPerPage, CurPage, retrieveSearch(), 0);
+        PageNumberLabel.setText(CurPage + " / " + TotalPage);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnSearch;
+    private javax.swing.JButton NextButton;
+    private javax.swing.JLabel PageNumberLabel;
+    private javax.swing.JButton PreviousButton;
     private javax.swing.JToggleButton btnTambahBarang;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

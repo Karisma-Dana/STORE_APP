@@ -18,6 +18,7 @@ import javax.swing.text.DocumentFilter;
 public class UpdateBarang extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UpdateBarang.class.getName());
+    private UpdateBarangListener listener;
     private final BarangController controller;
     private Barang dataBarang;
     private BarangPanel panelUtama;
@@ -25,15 +26,20 @@ public class UpdateBarang extends javax.swing.JFrame {
      * Creates new form UpdateBarang
      */
     
+    public interface UpdateBarangListener {
+        void onConfirmUpdate();
+    }
+    
     public UpdateBarang(){
         initComponents();
         this.controller = new BarangController();
     }
-    public UpdateBarang(BarangPanel panelUtama) {
+    
+    public UpdateBarang(BarangPanel panelUtama, UpdateBarangListener listener) {
         initComponents();
         this.controller = new BarangController();
         this.panelUtama = panelUtama;
-        
+        this.listener = listener;
         String placeholderHarga = "Masukkan harga...";
         
         
@@ -73,7 +79,6 @@ public class UpdateBarang extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setMinimumSize(new java.awt.Dimension(275, 277));
 
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("UPDATE BARANG");
 
         txtBarang.addActionListener(this::txtBarangActionPerformed);
@@ -81,7 +86,6 @@ public class UpdateBarang extends javax.swing.JFrame {
         spinerStok.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
         btnInsert.setBackground(new java.awt.Color(0, 255, 156));
-        btnInsert.setForeground(new java.awt.Color(0, 0, 0));
         btnInsert.setText("UPDATE");
         btnInsert.setBorderPainted(false);
         btnInsert.addActionListener(this::btnInsertActionPerformed);
@@ -94,15 +98,12 @@ public class UpdateBarang extends javax.swing.JFrame {
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Nama Barang");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Harga");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Stok");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -166,7 +167,7 @@ public class UpdateBarang extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -187,19 +188,18 @@ public class UpdateBarang extends javax.swing.JFrame {
         dataBarang.setStok(stok);
         
         controller.update(dataBarang);
-        if (this.panelUtama != null){
-            this.panelUtama.updateTableBarang("");
+        if (listener != null) {
+            listener.onConfirmUpdate();
         }
         this.dispose();
-        
     }//GEN-LAST:event_btnInsertActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
        
-        controller.delate(dataBarang.getId());
+        controller.delete(dataBarang.getId());
         if (this.panelUtama != null){
-            this.panelUtama.updateTableBarang("");
+            this.panelUtama.getTableData("");
         }
         this.dispose();
         
@@ -227,7 +227,7 @@ public class UpdateBarang extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new UpdateBarang(null).setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new UpdateBarang().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

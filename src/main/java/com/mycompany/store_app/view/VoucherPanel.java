@@ -5,7 +5,11 @@
 package com.mycompany.store_app.view;
 
 import com.mycompany.store_app.controller.VoucherController;
-import com.mycompany.store_app.model.entity.Voucer;
+import com.mycompany.store_app.model.entity.Voucher;
+import static com.mycompany.store_app.view.MainPanel.addTextListener;
+import java.awt.Color;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -14,17 +18,25 @@ import javax.swing.table.DefaultTableModel;
  * @author karis
  */
 public class VoucherPanel extends javax.swing.JPanel {
-    
+    final private String SEARCHPLACEHOLDER = "Type to search for item...";
     private final VoucherController controller;
-    
-
+    private int EntryPerPage = 25;
+    private int CurPage = 1;
+    private int TotalPage;
+    private double CurFilterHarga = 0;
+    private List<Voucher> TableDataList = new ArrayList();
     /**
      * Creates new form VoucherPanel
      */
     public VoucherPanel() {
         initComponents();
         this.controller = new VoucherController();
-        updateTableVoucher("", "");
+        addTextListener(txtSearch, newtext -> {
+            getTableData();
+            loadPage();
+        });
+        getTableData();
+        loadPage();
     }
     
     
@@ -46,8 +58,10 @@ public class VoucherPanel extends javax.swing.JPanel {
         tableVoucher = new javax.swing.JTable();
         btnTambah = new javax.swing.JToggleButton();
         txtSearch = new javax.swing.JTextField();
-        btnSearch = new javax.swing.JButton();
         cbJenis = new javax.swing.JComboBox<>();
+        NextButton = new javax.swing.JButton();
+        PageNumberLabel = new javax.swing.JLabel();
+        PreviousButton = new javax.swing.JButton();
 
         jPanel2.setBackground(new java.awt.Color(245, 247, 251));
 
@@ -59,19 +73,11 @@ public class VoucherPanel extends javax.swing.JPanel {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tableVoucher.setBackground(new java.awt.Color(255, 255, 255));
         tableVoucher.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         tableVoucher.setForeground(new java.awt.Color(51, 51, 51));
         tableVoucher.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
                 "Id", "Kode Voucher", "Jenis", "Diskon (...%)", "Stok"
@@ -84,6 +90,7 @@ public class VoucherPanel extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tableVoucher);
         if (tableVoucher.getColumnModel().getColumnCount() > 0) {
+            tableVoucher.getColumnModel().getColumn(0).setPreferredWidth(50);
             tableVoucher.getColumnModel().getColumn(0).setMaxWidth(50);
             tableVoucher.getColumnModel().getColumn(2).setMinWidth(140);
             tableVoucher.getColumnModel().getColumn(2).setMaxWidth(140);
@@ -93,30 +100,42 @@ public class VoucherPanel extends javax.swing.JPanel {
             tableVoucher.getColumnModel().getColumn(4).setMaxWidth(200);
         }
 
-        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 70, 1007, 569));
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 70, 1007, 510));
 
         btnTambah.setBackground(new java.awt.Color(0, 255, 156));
         btnTambah.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        btnTambah.setForeground(new java.awt.Color(0, 0, 0));
         btnTambah.setText("Tambah  Voucher");
         btnTambah.setBorderPainted(false);
         btnTambah.addActionListener(this::btnTambahActionPerformed);
         jPanel3.add(btnTambah, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 19, 210, 32));
 
-        txtSearch.setBackground(new java.awt.Color(255, 255, 255));
         txtSearch.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        txtSearch.addActionListener(this::txtSearchActionPerformed);
-        jPanel3.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 19, 296, 32));
-
-        btnSearch.setBackground(new java.awt.Color(0, 255, 156));
-        btnSearch.setForeground(new java.awt.Color(0, 0, 0));
-        btnSearch.setText("Search");
-        btnSearch.setBorderPainted(false);
-        btnSearch.addActionListener(this::btnSearchActionPerformed);
-        jPanel3.add(btnSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(922, 19, 104, 33));
+        txtSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtSearchFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtSearchFocusLost(evt);
+            }
+        });
+        jPanel3.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 19, 400, 32));
 
         cbJenis.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "LIMITED", "PUBLIC", " " }));
         jPanel3.add(cbJenis, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 20, 130, 30));
+
+        NextButton.setText("Next");
+        NextButton.setPreferredSize(new java.awt.Dimension(100, 30));
+        NextButton.addActionListener(this::NextButtonActionPerformed);
+        jPanel3.add(NextButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 600, -1, -1));
+
+        PageNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        PageNumberLabel.setText("0 / 0");
+        jPanel3.add(PageNumberLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 600, 100, 25));
+
+        PreviousButton.setText("Previous");
+        PreviousButton.setPreferredSize(new java.awt.Dimension(100, 30));
+        PreviousButton.addActionListener(this::PreviousButtonActionPerformed);
+        jPanel3.add(PreviousButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 600, -1, -1));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -175,15 +194,18 @@ public class VoucherPanel extends javax.swing.JPanel {
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
         // TODO add your handling code here:
         
-        InsertVoucher panel = new InsertVoucher(this);
+        InsertVoucher panel = new InsertVoucher(this, new InsertVoucher.InsertVoucherListener(){
+            @Override
+            public void onConfirmInsert() {
+                getTableData();
+                loadPage();
+            }
+        });
         panel.setLocationRelativeTo(this);
         panel.setVisible(true);
-        updateTableVoucher("", "");
+        getTableData();
+        loadPage();
     }//GEN-LAST:event_btnTambahActionPerformed
-
-    private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtSearchActionPerformed
 
     private void tableVoucherMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableVoucherMouseClicked
         // TODO add your handling code here:
@@ -191,65 +213,102 @@ public class VoucherPanel extends javax.swing.JPanel {
         int selectedRow = tableVoucher.getSelectedRow();
         if (selectedRow != -1){
             int idVoucher = Integer.parseInt(tableVoucher.getValueAt(selectedRow, 0).toString());
-            Voucer vcr = controller.getDataById(idVoucher);
+            Voucher vcr = controller.getDataById(idVoucher);
             
-            UpdateVoucher panel = new UpdateVoucher(this);
+            UpdateVoucher panel = new UpdateVoucher(this, new UpdateVoucher.UpdateVoucherListener() {
+                @Override
+                public void onConfirmUpdate() {
+                    getTableData();
+                    loadPage();
+                }
+            });
             panel.getData(vcr);
             panel.setLocationRelativeTo(this);
             panel.setVisible(true);
-            updateTableVoucher("", "");
+            getTableData();
+            loadPage();
         }
         
     }//GEN-LAST:event_tableVoucherMouseClicked
 
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
-        String filter = cbJenis.getSelectedItem().toString();
-        String keyword = txtSearch.getText().trim();
-        updateTableVoucher(keyword, filter);
-    }//GEN-LAST:event_btnSearchActionPerformed
-
-    public void updateTableVoucher(String keyword, String filter){
-        List<Voucer> listVoucer = null;
-  
-        if (keyword == null || keyword.isEmpty()){
-            if (filter == "PUBLIC"){
-                listVoucer = controller.ambilVoucerPublic("");
-            }else if(filter == "LIMITED"){
-                listVoucer = controller.ambilVoucerLimited("");   
-            }else{
-                listVoucer = controller.ambilSemuaVoucer();
-            }
-            
-        }else{
-            if (filter == "PUBLIC"){ 
-                listVoucer = controller.ambilVoucerPublic(keyword);
-            }else if(filter == "LIMITED"){
-                listVoucer = controller.ambilVoucerLimited(keyword);  
-            }else{
-                listVoucer = controller.search(keyword);
-            }
-            
+    private void NextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextButtonActionPerformed
+        if (CurPage < TotalPage) {
+            CurPage ++;
         }
+        getTableData();
+        loadPage();
+    }//GEN-LAST:event_NextButtonActionPerformed
+
+    private void PreviousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviousButtonActionPerformed
+        if (1 < CurPage) {
+            CurPage --;
+        }
+        getTableData();
+        loadPage();
+    }//GEN-LAST:event_PreviousButtonActionPerformed
+
+    private void txtSearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSearchFocusGained
+        txtSearch.setText("");
+        txtSearch.setForeground(new Color(0, 0, 0));
+    }//GEN-LAST:event_txtSearchFocusGained
+
+    private void txtSearchFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSearchFocusLost
+        if (txtSearch.getText().isBlank()){
+            txtSearch.setForeground(new Color(153, 153, 153));
+            txtSearch.setText(SEARCHPLACEHOLDER);
+        }
+    }//GEN-LAST:event_txtSearchFocusLost
+    
+    private String retrieveSearch(){
+        if (txtSearch.getText().equals("Type to search for item...")){
+            return "";
+        } else {
+            return txtSearch.getText();
+        }
+    }
         
+    private void newRow(DefaultTableModel modelBarang, Voucher vc){
+        DecimalFormat df = new DecimalFormat("#,##0.##");
+        Object[] rowData = {
+            vc.getId(),
+            vc.getKode_voucher(),
+            vc.getJenis_voucher(),
+            vc.getDiskon(),
+            vc.getStok()
+        };
+        modelBarang.addRow(rowData);
+    }
+    
+    public void loadPage(){
         DefaultTableModel modelBarang = (DefaultTableModel) tableVoucher.getModel();
         modelBarang.setRowCount(0);
         
-        for (Voucer vc : listVoucer){
-            Object[] rowData = {
-                vc.getId(),
-                vc.getKode_voucer(),
-                vc.getJenis_voucer(),
-                vc.getDiskon(),
-                vc.getStok()
-            };
-            modelBarang.addRow(rowData);
-            
+        for (Voucher vc : TableDataList){
+            newRow(modelBarang, vc);
         }
+    }
+    
+    public String getFilter(){
+        return cbJenis.getSelectedItem().toString();
+    }
+    
+    public void getTableData(){
+        TotalPage = (int) Math.ceil((double) controller.count(getFilter(), retrieveSearch()) / EntryPerPage);
+        System.out.println("com.mycompany.store_app.view.VoucherPanel.getTableData() " +TotalPage);
+        if (TotalPage < CurPage) {
+            CurPage = TotalPage;
+            if (CurPage <= 0) {
+                CurPage = 1;
+            }
+        }
+        TableDataList = controller.ambilVoucherValid(EntryPerPage, CurPage, retrieveSearch(), "");
+        PageNumberLabel.setText(CurPage + " / " + TotalPage);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnSearch;
+    private javax.swing.JButton NextButton;
+    private javax.swing.JLabel PageNumberLabel;
+    private javax.swing.JButton PreviousButton;
     private javax.swing.JToggleButton btnTambah;
     private javax.swing.JComboBox<String> cbJenis;
     private javax.swing.JLabel jLabel2;

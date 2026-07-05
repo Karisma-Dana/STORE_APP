@@ -8,6 +8,7 @@ import com.mycompany.store_app.controller.BarangController;
 import com.mycompany.store_app.controller.PenjualanController;
 import com.mycompany.store_app.controller.UserController;
 import com.mycompany.store_app.controller.VoucherController;
+import com.mycompany.store_app.controller.UserController;
 import com.mycompany.store_app.model.entity.Penjualan;
 import com.mycompany.store_app.model.entity.User;
 import java.util.List;
@@ -39,8 +40,8 @@ public class AdminMainPanel extends javax.swing.JPanel {
     
     public void updateNumber(){
         int member = uc.getAllData().size();
-        int jumlahBarang = bc.ambilSemuaBarang().size();
-        int jumlahVoucher = vc.ambilSemuaVoucer().size();
+        int jumlahBarang = bc.count(0, "");
+        int jumlahVoucher = vc.count("", "");
         List<Penjualan> listPenjualan = pc.getAll();
         
         double omset = 0;

@@ -4,7 +4,7 @@
  */
 package com.mycompany.store_app.view;
 import com.mycompany.store_app.controller.VoucherController;
-import com.mycompany.store_app.model.entity.Voucer;
+import com.mycompany.store_app.model.entity.Voucher;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -17,13 +17,20 @@ public class InsertVoucher extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(InsertVoucher.class.getName());
     private final VoucherController controller;
-    private Voucer  dataVoucer;
+    private Voucher  dataVoucer;
     private VoucherPanel panelUtama;
+    private InsertVoucher.InsertVoucherListener listener;
     /**
      * Creates new form UpdateBarang
      */
-    public InsertVoucher(VoucherPanel panelUtama) {
+    
+    public interface InsertVoucherListener{
+        void onConfirmInsert();
+    }
+    
+    public InsertVoucher(VoucherPanel panelUtama, InsertVoucherListener listener) {
         initComponents();
+        this.listener = listener;
         this.panelUtama = panelUtama;
         this.controller = new VoucherController();
 
@@ -175,11 +182,11 @@ public class InsertVoucher extends javax.swing.JFrame {
         String jenis = cbJenis.getSelectedItem().toString();
         int stok = (Integer) spinStok.getValue();
         
-        this.dataVoucer = new Voucer(kode, jenis, diskon, stok);
+        this.dataVoucer = new Voucher(kode, jenis, diskon, stok);
               
         controller.insert(dataVoucer);
-        if (this.panelUtama != null){
-            this.panelUtama.updateTableVoucher("", "");
+        if (listener != null){
+            listener.onConfirmInsert();
         }
         this.dispose();
     }//GEN-LAST:event_btnInsertActionPerformed
@@ -210,7 +217,7 @@ public class InsertVoucher extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new InsertVoucher(null).setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new InsertVoucher().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
