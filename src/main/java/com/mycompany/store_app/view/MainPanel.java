@@ -5,12 +5,14 @@
 package com.mycompany.store_app.view;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.mycompany.store_app.controller.BarangController;
 import com.mycompany.store_app.model.entity.ItemCell;
 import com.mycompany.store_app.model.entity.Barang;
 import com.mycompany.store_app.model.entity.Detail_penjualan;
 import com.mycompany.store_app.model.entity.QtyCellEditor;
 import java.awt.Color;
 import java.awt.Component;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
@@ -19,6 +21,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -26,29 +32,58 @@ import javax.swing.table.DefaultTableModel;
  */
 public class MainPanel extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainPanel.class.getName());
+    private final BarangController barangcontroller = new BarangController();
     /**
      * Creates new form MainPanel
      */
     final private String SEARCHPLACEHOLDER = "Type to search for item...";
     private int EntryPerPage = 25;
-    private int CurPage = 0;
+    private int CurPage = 1;
     private int TotalPage;
-    private int CurEntryPerPage = 0;
     private double CurFilterHarga = 0;
     
-    private ArrayList<Detail_penjualan> ListBarangTemp = new ArrayList();
-    private ArrayList<Barang> TableDataList = new ArrayList();
+    private List<Detail_penjualan> ListBarangTemp = new ArrayList();
+    private List<Barang> TableDataList = new ArrayList();
+    
+    public static void addTextListener(JTextField field, java.util.function.Consumer<String> consumer) {
+        field.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
+            @Override public void removeUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
+            @Override public void changedUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
+        });
+    }
     
     public MainPanel() {
         initComponents();
+        addTextListener(SearchField, newtext -> {
+            getTableData();
+            loadPage();
+        });
+        getTableData();
         loadPage();
     }
+    
+    private String retrieveSearch(){
+        if (SearchField.getText().equals("Type to search for item...")){
+            return "";
+        } else {
+            return SearchField.getText();
+        }
+    }
     public void getTableData(){
-        
+        TotalPage = (int) Math.ceil((double) barangcontroller.count(CurFilterHarga, retrieveSearch()) / EntryPerPage);
+        if (TotalPage < CurPage) {
+            CurPage = TotalPage;
+            if (CurPage <= 0) {
+                CurPage = 1;
+            }
+        }
+        TableDataList = barangcontroller.ambilSemuaBarang(EntryPerPage, CurPage, retrieveSearch(), CurFilterHarga);
+        PageNumberLabel.setText(CurPage + " / " + TotalPage);
     }
     
-    public void newRow(DefaultTableModel model,QtyCellEditor qtyEditor){
-        model.addRow(new ItemCell(new Barang(1, "Tes", 5, 5)).toTableRow(TableBarang.getRowCount()+1));
+    public void newRow(DefaultTableModel model, QtyCellEditor qtyEditor, Barang barang){
+        model.addRow(new ItemCell(barang).toTableRow(TableBarang.getRowCount()+1));
         qtyEditor.addPropertyChangeListener(evt -> {
             if ("quantity".equals(evt.getPropertyName())) {
                     Object[] data = (Object[]) evt.getNewValue();
@@ -70,6 +105,7 @@ public class MainPanel extends javax.swing.JFrame {
             }
         });
     }
+    
     public void loadPage(){
         QtyCellEditor qtyEditor = new QtyCellEditor();
         TableBarang.getColumnModel().getColumn(5).setCellEditor(qtyEditor);
@@ -83,8 +119,11 @@ public class MainPanel extends javax.swing.JFrame {
             
         });
         DefaultTableModel model = (DefaultTableModel)TableBarang.getModel();
-        for (int i = 0; i < 25; i++){newRow(model, qtyEditor);}
-        LabelResult.setText("Showing " + CurEntryPerPage +" result of " + EntryPerPage + " possible");
+        model.setRowCount(0);
+        for (int i = 0; i < TableDataList.size(); i++){
+            newRow(model, qtyEditor, TableDataList.get(i));
+        }
+        LabelResult.setText("Showing " + TableDataList.size() +" result of " + EntryPerPage + " possible");
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -218,7 +257,7 @@ public class MainPanel extends javax.swing.JFrame {
             TableBarang.getColumnModel().getColumn(6).setPreferredWidth(200);
         }
 
-        ShoppingTablePanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1230, 520));
+        ShoppingTablePanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1230, 530));
 
         PageNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         PageNumberLabel.setText("0 / 0");
@@ -248,11 +287,6 @@ public class MainPanel extends javax.swing.JFrame {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 SearchFieldFocusLost(evt);
-            }
-        });
-        SearchField.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                SearchFieldMouseClicked(evt);
             }
         });
         ShoppingPanel.add(SearchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, 720, 30));
@@ -384,10 +418,6 @@ public class MainPanel extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void SearchFieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SearchFieldMouseClicked
-        SearchField.setText("");
-    }//GEN-LAST:event_SearchFieldMouseClicked
-
     private void SearchFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_SearchFieldFocusLost
         if (SearchField.getText().isBlank()){
             SearchField.setForeground(new Color(153, 153, 153));
@@ -401,25 +431,37 @@ public class MainPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_SearchFieldFocusGained
 
     private void AddToCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddToCartButtonActionPerformed
-        ListBarangTemp.forEach(Dp -> {
-            System.out.println(Dp.getBarang().getNama() +" "+Dp.getJumlah());
-
-        });
+        DefaultTableModel model = (DefaultTableModel) TabelCheckout.getModel();
+        model.setRowCount(0);
+        DecimalFormat df = new DecimalFormat("#,##0.##");
+        double subtotal = 0;
+        for (Detail_penjualan Dp : ListBarangTemp) {
+            subtotal += Dp.getSubtotal();
+            model.addRow(new Object[]{
+                Dp.getBarang().getNama(), 
+                "RP " + df.format(Dp.getBarang().getHarga()), 
+                Dp.getJumlah(), 
+                "RP " + df.format(Dp.getSubtotal())
+            });
+        }
+        
+        SubtotalLabelRightnum.setText("RP " + df.format(subtotal));
+        SubtotalUndernum.setText("RP " + df.format(subtotal));
     }//GEN-LAST:event_AddToCartButtonActionPerformed
 
     private void PreviousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviousButtonActionPerformed
-        getTableData();
         if (1 < CurPage) {
             CurPage --;
         }
+        getTableData();
         loadPage();
     }//GEN-LAST:event_PreviousButtonActionPerformed
 
     private void NextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NextButtonActionPerformed
-        getTableData();
         if (CurPage < TotalPage) {
             CurPage ++;
         }
+        getTableData();
         loadPage();
     }//GEN-LAST:event_NextButtonActionPerformed
 

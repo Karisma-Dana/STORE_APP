@@ -25,13 +25,18 @@ public class BarangController {
     public void update(Barang barang) {
         barangDAO.update(barang);
     }
-    public void delate(int id) {
+    public void delete(int id) {
         barangDAO.delete(id);
     }
-    public List<Barang> ambilSemuaBarang() {
-        return barangDAO.readAll();
+    
+    public int count(double pricefilter, String namabarang){
+        return barangDAO.count(pricefilter, namabarang);
     }
-   
+    
+    public List<Barang> ambilSemuaBarang(int EntryperPage, int Page, String namabarang, double pricefilter) {
+        return barangDAO.readAll(EntryperPage, Page, namabarang, pricefilter);
+    }
+    
     public Barang ambilBarangById(int id) {
         return barangDAO.getById(id);
     }

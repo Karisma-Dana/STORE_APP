@@ -4,8 +4,8 @@
  */
 package com.mycompany.store_app.controller;
 
-import com.mycompany.store_app.model.DAO.VoucerDAO;
-import com.mycompany.store_app.model.entity.Voucer;
+import com.mycompany.store_app.model.DAO.VoucherDAO;
+import com.mycompany.store_app.model.entity.Voucher;
 import java.util.List;
 
 /**
@@ -13,49 +13,48 @@ import java.util.List;
  * @author karis
  */
 public class VoucherController {
-    private final VoucerDAO voucerDAO;
+    private final VoucherDAO voucherDAO;
     
     public VoucherController() {
-        this.voucerDAO = new VoucerDAO();
+        this.voucherDAO = new VoucherDAO();
     }
-    public void insert(Voucer vcr) {
-        voucerDAO.insert(vcr);
+    public void insert(Voucher vcr) {
+        voucherDAO.insert(vcr);
     }
     
-    public void update(Voucer vcr) {
-        voucerDAO.update(vcr);
+    public void update(Voucher vcr) {
+        voucherDAO.update(vcr);
     }
     
     public void delete(int id) {
-        voucerDAO.delete(id);
+        voucherDAO.delete(id);
     }
     
-    public List<Voucer> ambilSemuaVoucer() {
-        return voucerDAO.readAll();
+    public int count(String jenis, String search){
+        return voucherDAO.count(jenis, search);
     }
     
-    public List<Voucer> ambilVoucerPublic(String filter) {
-        return voucerDAO.getPUBLIC_voucer(filter);
+    public List<Voucher> ambilVoucherPublic(){
+        return voucherDAO.ambilVoucherPublic();
+    }
+    public List<Voucher> ambilVoucherValid(int EntryPerPage, int Page, String jenis, String search) {
+        return voucherDAO.getAllVoucher(EntryPerPage, Page, jenis, search);
     }
     
-    public List<Voucer> ambilVoucerLimited(String filter) {
-        return voucerDAO.getLIMITED_voucer(filter);
+    public Voucher cekValiditasVoucherLimited(String kodeVoucer) {
+        return voucherDAO.checkVoucher_LIMITED(kodeVoucer);
     }
     
-    public Voucer cekValiditasVoucerLimited(String kodeVoucer) {
-        return voucerDAO.checkVoucer_LIMITED(kodeVoucer);
+    public void kurangiStokVoucher(int id, int stokBaru) {
+        voucherDAO.updateStok(id, stokBaru);
     }
     
-    public void kurangiStokVoucer(int id, int stokBaru) {
-        voucerDAO.updateStok(id, stokBaru);
+    public Voucher getDataById(int id){
+        return voucherDAO.getById(id);
     }
     
-    public Voucer getDataById(int id){
-        return voucerDAO.getById(id);
-    }
-    
-    public List<Voucer> search(String keyword){
-        return voucerDAO.searchVoucer(keyword);
+    public List<Voucher> search(String keyword){
+        return voucherDAO.searchVoucher(keyword);
     }
     
     

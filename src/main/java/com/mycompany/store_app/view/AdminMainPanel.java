@@ -39,8 +39,8 @@ public class AdminMainPanel extends javax.swing.JPanel {
     
     public void updateNumber(){
         int member = uc.getAllData().size();
-        int jumlahBarang = bc.ambilSemuaBarang().size();
-        int jumlahVoucher = vc.ambilSemuaVoucer().size();
+        int jumlahBarang = bc.count(0, "");
+        int jumlahVoucher = vc.count("", "");
         List<Penjualan> listPenjualan = pc.getAll();
         
         double omset = 0;

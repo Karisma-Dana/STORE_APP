@@ -28,7 +28,6 @@ public class STORE_APP {
         
         SwingUtilities.invokeLater(() -> {
             form.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-                System.out.println("com.mycompany.store_app.STORE_APP.main()");
                 if ("signedUser".equals(evt.getPropertyName())) {
                     User user = (User) evt.getNewValue();
                     if (user != null) {

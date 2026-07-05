@@ -20,15 +20,21 @@ public class InsertBarang extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(InsertBarang.class.getName());
     private BarangController controller;
     private BarangPanel panelUtama;
+    private InsertBarang.InsertBarangListener listener;
+    
+    public interface InsertBarangListener {
+        void onConfirmUpdate();
+    }
     /**
      * Creates new form InsertBarang
      */
-    public InsertBarang(BarangPanel panelUtama) {
+    public InsertBarang(BarangPanel panelUtama, InsertBarangListener listener) {
         initComponents();
+        this.listener = listener;
         this.panelUtama = panelUtama;
         this.controller = new BarangController();
-        
     }
+    
     public InsertBarang( ) {
         initComponents();
         this.controller = new BarangController();
@@ -156,8 +162,8 @@ public class InsertBarang extends javax.swing.JFrame {
         
         Barang dataBarang = new Barang(nama, harga, stok);
         controller.insert(dataBarang);
-        if (this.panelUtama != null){
-            this.panelUtama.updateTableBarang("");
+        if (listener != null){
+            listener.onConfirmUpdate();
         }
         this.dispose();
     }//GEN-LAST:event_btnInsertActionPerformed

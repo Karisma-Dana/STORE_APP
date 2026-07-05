@@ -14,6 +14,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultFormatter;
 import java.beans.PropertyChangeSupport;
+import java.text.DecimalFormat;
 /**
  *
  * @author Flame
@@ -57,7 +58,14 @@ public class QtyCellEditor extends DefaultCellEditor{
         pcs.removePropertyChangeListener(listener);
     }
     private void inputChanged(){
+        DecimalFormat df = new DecimalFormat("#,##0.##");
         int qty = Integer.parseInt(input.getValue().toString());
+        if(qty != item.getQty()){
+
+            item.setQty(qty);
+            item.setTotal(item.getBarang().getHarga()*qty);
+            table.setValueAt("RP " + df.format(item.getTotal()), row, 6);
+        }
     }
     
     @Override
@@ -66,7 +74,7 @@ public class QtyCellEditor extends DefaultCellEditor{
         this.table = table;
         this.row = row;
         this.item = (ItemCell)table.getValueAt(row, 0);
-        int qty= Integer.parseInt(value.toString());
+        int qty = Integer.parseInt(value.toString());
         input.setValue(qty);
         return input;
     }

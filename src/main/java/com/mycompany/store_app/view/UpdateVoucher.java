@@ -5,7 +5,7 @@
 package com.mycompany.store_app.view;
 
 import com.mycompany.store_app.controller.VoucherController;
-import com.mycompany.store_app.model.entity.Voucer;
+import com.mycompany.store_app.model.entity.Voucher;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -19,9 +19,13 @@ public class UpdateVoucher extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UpdateVoucher.class.getName());
     private final VoucherController controller;
-    private Voucer  dataVoucer;
+    private Voucher  dataVoucher;
     private VoucherPanel panelUtama;
-
+    private UpdateVoucher.UpdateVoucherListener listener;
+    
+    public interface UpdateVoucherListener{
+        public void onConfirmUpdate();
+    }
     /**
      * Creates new form UpdateVoucher
      */
@@ -30,8 +34,9 @@ public class UpdateVoucher extends javax.swing.JFrame {
         initComponents();
         this.controller = new VoucherController();
     }
-    public UpdateVoucher(VoucherPanel panelUtama) {
+    public UpdateVoucher(VoucherPanel panelUtama, UpdateVoucherListener listener) {
         initComponents();
+        this.listener = listener;
         this.controller = new VoucherController();
         this.panelUtama = panelUtama;
         
@@ -199,14 +204,14 @@ public class UpdateVoucher extends javax.swing.JFrame {
         String jenis = cbJenis.getSelectedItem().toString();
         int stok = (Integer) spinStok.getValue();
         
-        dataVoucer.setKode_voucer(kode);
-        dataVoucer.setDiskon(diskon);
-        dataVoucer.setJenis_voucer(jenis);
-        dataVoucer.setStok(stok);
+        dataVoucher.setKode_voucher(kode);
+        dataVoucher.setDiskon(diskon);
+        dataVoucher.setJenis_voucher(jenis);
+        dataVoucher.setStok(stok);
         
-        controller.update(dataVoucer);
-        if (this.panelUtama != null){
-            this.panelUtama.updateTableVoucher("", "");
+        controller.update(dataVoucher);
+        if (listener != null){
+            listener.onConfirmUpdate();
         }
         this.dispose();
     }//GEN-LAST:event_btnUpdateActionPerformed
@@ -214,9 +219,9 @@ public class UpdateVoucher extends javax.swing.JFrame {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
 
-        controller.delete(dataVoucer.getId());
-        if (this.panelUtama != null){
-            this.panelUtama.updateTableVoucher("", "");
+        controller.delete(dataVoucher.getId());
+        if (listener != null){
+            listener.onConfirmUpdate();
         }
         this.dispose();
     }//GEN-LAST:event_btnDeleteActionPerformed
@@ -247,15 +252,15 @@ public class UpdateVoucher extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new UpdateVoucher(null).setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new UpdateVoucher().setVisible(true));
     }
     
-    public void getData(Voucer vcr){
-        this.dataVoucer = vcr;
-        txtKode.setText(dataVoucer.getKode_voucer());
-        txtDiskon.setText(String.valueOf( dataVoucer.getDiskon()));
-        cbJenis.setSelectedItem(dataVoucer.getJenis_voucer());
-        spinStok.setValue(dataVoucer.getStok());
+    public void getData(Voucher vcr){
+        this.dataVoucher = vcr;
+        txtKode.setText(dataVoucher.getKode_voucher());
+        txtDiskon.setText(String.valueOf(dataVoucher.getDiskon()));
+        cbJenis.setSelectedItem(dataVoucher.getJenis_voucher());
+        spinStok.setValue(dataVoucher.getStok());
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

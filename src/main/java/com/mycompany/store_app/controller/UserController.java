@@ -9,6 +9,7 @@ import com.mycompany.store_app.model.DAO.UserDAO;
 import com.mycompany.store_app.model.entity.User;
 import com.mycompany.store_app.util.EmailServices;
 import com.mycompany.store_app.view.PromptLogin;
+import java.util.List;
 import java.util.Random;
 import javax.swing.JOptionPane;
 /**
@@ -40,14 +41,12 @@ public class UserController {
     public UserController(){}
     
     public void signalUserSigned(){
-        System.out.println("com.mycompany.store_app.controller.UserController.signalUserSigned()");
         pcs.firePropertyChange("signedUser", null, signedUser);
     }
     
     public User signIn(User user){
         if(!userdao.checkEmail_unik(user.getEmail())){
             signedUser = userdao.login(user.getEmail(), user.getPassword());
-            System.out.println("com.mycompany.store_app.controller.UserController.signIn()");
             signalUserSigned();
         }
         return null;
@@ -72,5 +71,9 @@ public class UserController {
             return true;
         }
         return false;
+    }
+    
+    public List<User> getAllData(){
+        return userdao.readAll();
     }
 }
