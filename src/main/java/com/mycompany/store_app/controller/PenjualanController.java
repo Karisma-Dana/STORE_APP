@@ -20,15 +20,15 @@ public class PenjualanController {
         this.penjualanDAO = new PenjualanDAO();
     }
     
-    public void insert(Penjualan pj){
-       penjualanDAO.insert(pj);
+    public int insert(Penjualan pj){
+       return penjualanDAO.insert(pj);
     }
     
     public void update(Penjualan pj){
         penjualanDAO.update(pj);
     }
     
-    public void delate(int id){
+    public void delete(int id){
         penjualanDAO.delete(id);
     }
     

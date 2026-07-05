@@ -14,12 +14,12 @@ import java.util.List;
  *
  * @author karis
  */
-public class DetailPenjualanCotroller {
+public class DetailPenjualanController {
        
     private final Detail_penjualanDAO detailPenjualanDAO;
     
     // Constructor untuk inisialisasi objek DAO
-    public DetailPenjualanCotroller() {
+    public DetailPenjualanController() {
         this.detailPenjualanDAO = new Detail_penjualanDAO();
     }
     

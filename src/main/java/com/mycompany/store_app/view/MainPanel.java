@@ -6,12 +6,19 @@ package com.mycompany.store_app.view;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.mycompany.store_app.controller.BarangController;
+import com.mycompany.store_app.controller.DetailPenjualanController;
+import com.mycompany.store_app.controller.PenjualanController;
+import com.mycompany.store_app.controller.VoucherController;
 import com.mycompany.store_app.model.entity.ItemCell;
 import com.mycompany.store_app.model.entity.Barang;
 import com.mycompany.store_app.model.entity.Detail_penjualan;
+import com.mycompany.store_app.model.entity.ItemChangeListener;
+import com.mycompany.store_app.model.entity.Penjualan;
 import com.mycompany.store_app.model.entity.QtyCellEditor;
+import com.mycompany.store_app.model.entity.Voucher;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ItemEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.JSpinner;
@@ -22,6 +29,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -33,6 +43,9 @@ import javax.swing.event.DocumentListener;
 public class MainPanel extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainPanel.class.getName());
     private final BarangController barangcontroller = new BarangController();
+    private final VoucherController vouchercontroller = new VoucherController();
+    private final DetailPenjualanController dpcontroller = new DetailPenjualanController();
+    private final PenjualanController pcontroller = new PenjualanController();
     /**
      * Creates new form MainPanel
      */
@@ -41,9 +54,51 @@ public class MainPanel extends javax.swing.JFrame {
     private int CurPage = 1;
     private int TotalPage;
     private double CurFilterHarga = 0;
-    
+    private DecimalFormat df = new DecimalFormat("#,##0.##");
     private List<Detail_penjualan> ListBarangTemp = new ArrayList();
     private List<Barang> TableDataList = new ArrayList();
+    private Voucher appliedlimited, appliedPublic;
+    private MainPanel.listenerMainPanel listener;
+    
+    public interface listenerMainPanel{
+        void onLogOut();
+    }
+    
+    private void reset(){
+        CartButton.setVisible(true);
+        ShoppingPanel.setVisible(true);
+        BackButton.setVisible(false);
+        KasirPanel.setVisible(false);
+        
+        CurFilterHarga = 0;
+        CurPage = 1;
+        getTableData();
+        loadPage();
+        
+        appliedlimited = null;
+        appliedPublic = null;
+    }
+    
+    private void processTransaction(){
+        double total = refreshCalc();
+        int notaID = pcontroller.insert(new Penjualan(total));
+        Penjualan penjualan = pcontroller.getDatabyID(notaID);
+        
+        if (appliedPublic != null){
+            vouchercontroller.kurangiStokVoucher(appliedPublic.getId(), vouchercontroller.getDataById(appliedPublic.getId()).getStok()-1);
+        }
+        
+        if (appliedlimited != null){
+            vouchercontroller.kurangiStokVoucher(appliedlimited.getId(), vouchercontroller.getDataById(appliedlimited.getId()).getStok()-1);
+        }
+        
+        for (Detail_penjualan dp : ListBarangTemp) {
+            dp.setPenjualan(penjualan);
+            barangcontroller.perbaruiStok(dp.getBarang().getId(), barangcontroller.ambilBarangById(dp.getBarang().getId()).getStok()-dp.getJumlah());
+            dpcontroller.insert(dp);
+        }
+        reset();
+    }
     
     public static void addTextListener(JTextField field, java.util.function.Consumer<String> consumer) {
         field.getDocument().addDocumentListener(new DocumentListener() {
@@ -53,14 +108,75 @@ public class MainPanel extends javax.swing.JFrame {
         });
     }
     
-    public MainPanel() {
+    private void refreshVoucherCombo(){
+        DefaultComboBoxModel combomodel = new DefaultComboBoxModel();
+        List<Voucher> publicvoucher = vouchercontroller.ambilVoucherPublic();
+        
+        for (Voucher vc : publicvoucher) {
+            combomodel.addElement(vc);
+        }
+        
+        VoucherComboBox.setModel(combomodel);
+        combomodel.setSelectedItem(combomodel.getElementAt(-1));
+    }
+    
+    private double refreshCalc(){
+        double subtotal = 0;
+        for (Detail_penjualan Dp : ListBarangTemp) {
+            subtotal += Dp.getSubtotal();
+        }
+        double LimitedDiscount = 0;
+        double PublicDiscount = 0;
+        
+        if (appliedlimited != null){
+            VoucherLimitedPercentLabel.setText("-"+appliedlimited.getDiskon()+"%");
+            LimitedDiscount = appliedlimited.getDiskon()*subtotal/100;
+            VoucherLimitedLabel.setText("RP -"+df.format(LimitedDiscount));
+        } else {
+            VoucherLimitedPercentLabel.setText("");
+        }
+        
+        if (appliedPublic != null){
+            VoucherPublicPercentLabel.setText("-"+appliedPublic.getDiskon()+"%");
+            PublicDiscount = appliedPublic.getDiskon()*subtotal/100;
+            VoucherPublicLabel.setText("RP -"+df.format(PublicDiscount));
+        } else {
+            VoucherPublicPercentLabel.setText("");
+        }
+        
+        double total = subtotal - LimitedDiscount - PublicDiscount;
+        SubtotalLabelRightnum.setText("RP " + df.format(subtotal));
+        SubtotalUndernum.setText("RP " + df.format(subtotal));
+        TotalLabelNum.setText("RP " +df.format(total));
+        return total;
+    }
+    public MainPanel() {};
+    
+    public MainPanel(listenerMainPanel listener) {
+        this.listener = listener;
         initComponents();
+        VoucherComboBox.addItemListener(new ItemChangeListener(){
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (VoucherComboBox.getSelectedIndex() == -1){
+                    refreshCalc();
+                    return;
+                }
+                appliedPublic = (Voucher) event.getItem();
+                refreshCalc();
+            }
+            
+        });
+        
         addTextListener(SearchField, newtext -> {
             getTableData();
             loadPage();
         });
         getTableData();
         loadPage();
+        
+
+        
     }
     
     private String retrieveSearch(){
@@ -137,6 +253,7 @@ public class MainPanel extends javax.swing.JFrame {
         TopPanel = new javax.swing.JPanel();
         CartButton = new javax.swing.JButton();
         BackButton = new javax.swing.JButton();
+        LogOutButton = new javax.swing.JButton();
         CardMainPanel = new javax.swing.JPanel();
         ShoppingPanel = new javax.swing.JPanel();
         FilterPanelMenu = new javax.swing.JPanel();
@@ -155,24 +272,24 @@ public class MainPanel extends javax.swing.JFrame {
         KasirPanel = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         TabelCheckout = new javax.swing.JTable();
-        TGLLabel = new javax.swing.JLabel();
-        ResiLabel = new javax.swing.JLabel();
+        TGLHeaderLabel = new javax.swing.JLabel();
         SubtotalLabelUnder = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         SubtotalLabelRightnum = new javax.swing.JLabel();
         VoucherComboBox = new javax.swing.JComboBox<>();
         VoucherField = new javax.swing.JTextField();
         TotalLabel = new javax.swing.JLabel();
-        Voucher1Label = new javax.swing.JLabel();
+        VoucherPublicLabel = new javax.swing.JLabel();
         TotalLabelNum = new javax.swing.JLabel();
         SubtotalLabelRight = new javax.swing.JLabel();
-        Voucher2Label = new javax.swing.JLabel();
-        CancelButton = new javax.swing.JButton();
+        VoucherLimitedLabel = new javax.swing.JLabel();
         CheckoutButton = new javax.swing.JButton();
-        Voucher1Label1 = new javax.swing.JLabel();
-        Voucher1Label2 = new javax.swing.JLabel();
+        CancelButton = new javax.swing.JButton();
+        VoucherPublicPercentLabel = new javax.swing.JLabel();
+        VoucherLimitedPercentLabel = new javax.swing.JLabel();
         TransaksiHeader = new javax.swing.JLabel();
         SubtotalUndernum = new javax.swing.JLabel();
+        TGLLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1280, 720));
@@ -198,6 +315,14 @@ public class MainPanel extends javax.swing.JFrame {
         TopPanel.add(BackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1212, 12, 41, 41));
         BackButton.putClientProperty(FlatClientProperties.STYLE, "borderWidth: 0; focusColor: #0cb9a8");
         BackButton.setVisible(false);
+
+        LogOutButton.setBackground(new java.awt.Color(12, 185, 168));
+        LogOutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/log-out.png"))); // NOI18N
+        LogOutButton.setFocusPainted(false);
+        LogOutButton.setFocusable(false);
+        LogOutButton.addActionListener(this::LogOutButtonActionPerformed);
+        TopPanel.add(LogOutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 12, 41, 41));
+        CartButton.putClientProperty(FlatClientProperties.STYLE, "borderWidth: 0; focusColor: #0cb9a8");
 
         getContentPane().add(TopPanel, java.awt.BorderLayout.NORTH);
 
@@ -331,13 +456,9 @@ public class MainPanel extends javax.swing.JFrame {
 
         KasirPanel.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 65, 700, 500));
 
-        TGLLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        TGLLabel.setText("TGL:");
-        KasirPanel.add(TGLLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 40, -1, -1));
-
-        ResiLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        ResiLabel.setText("NO RESI:");
-        KasirPanel.add(ResiLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, -1, -1));
+        TGLHeaderLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        TGLHeaderLabel.setText("TGL:");
+        KasirPanel.add(TGLHeaderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, -1, -1));
 
         SubtotalLabelUnder.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         SubtotalLabelUnder.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -354,17 +475,27 @@ public class MainPanel extends javax.swing.JFrame {
         VoucherComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jPanel1.add(VoucherComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, 120, 25));
 
+        VoucherField.setForeground(new java.awt.Color(153, 153, 153));
         VoucherField.setText("...");
+        VoucherField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                VoucherFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                VoucherFieldFocusLost(evt);
+            }
+        });
+        VoucherField.addActionListener(this::VoucherFieldActionPerformed);
         jPanel1.add(VoucherField, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 150, 120, 25));
 
         TotalLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         TotalLabel.setText("Total:");
         jPanel1.add(TotalLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 120, -1));
 
-        Voucher1Label.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        Voucher1Label.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        Voucher1Label.setText("RP -0.000.000,00");
-        jPanel1.add(Voucher1Label, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 90, 150, -1));
+        VoucherPublicLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        VoucherPublicLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        VoucherPublicLabel.setText("RP -0.000.000,00");
+        jPanel1.add(VoucherPublicLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 90, 150, -1));
 
         TotalLabelNum.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         TotalLabelNum.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -375,30 +506,31 @@ public class MainPanel extends javax.swing.JFrame {
         SubtotalLabelRight.setText("Subtotal:");
         jPanel1.add(SubtotalLabelRight, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 120, -1));
 
-        Voucher2Label.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        Voucher2Label.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        Voucher2Label.setText("RP -0.000.000,00");
-        jPanel1.add(Voucher2Label, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 150, 150, -1));
+        VoucherLimitedLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        VoucherLimitedLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        VoucherLimitedLabel.setText("RP -0.000.000,00");
+        jPanel1.add(VoucherLimitedLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 150, 150, -1));
 
-        CancelButton.setBackground(new java.awt.Color(12, 181, 80));
-        CancelButton.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        CancelButton.setForeground(new java.awt.Color(255, 255, 255));
-        CancelButton.setText("Checkout");
-        jPanel1.add(CancelButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 400, 350, 50));
+        CheckoutButton.setBackground(new java.awt.Color(12, 181, 80));
+        CheckoutButton.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        CheckoutButton.setForeground(new java.awt.Color(255, 255, 255));
+        CheckoutButton.setText("Checkout");
+        CheckoutButton.addActionListener(this::CheckoutButtonActionPerformed);
+        jPanel1.add(CheckoutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 400, 350, 50));
 
-        CheckoutButton.setBackground(new java.awt.Color(153, 0, 51));
-        CheckoutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/x.png"))); // NOI18N
-        jPanel1.add(CheckoutButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 50, 50));
+        CancelButton.setBackground(new java.awt.Color(153, 0, 51));
+        CancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/x.png"))); // NOI18N
+        jPanel1.add(CancelButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 50, 50));
 
-        Voucher1Label1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        Voucher1Label1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        Voucher1Label1.setText("-n%");
-        jPanel1.add(Voucher1Label1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 90, 50, -1));
+        VoucherPublicPercentLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        VoucherPublicPercentLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        VoucherPublicPercentLabel.setText("-n%");
+        jPanel1.add(VoucherPublicPercentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 90, 70, -1));
 
-        Voucher1Label2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        Voucher1Label2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        Voucher1Label2.setText("-n%");
-        jPanel1.add(Voucher1Label2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 150, 50, -1));
+        VoucherLimitedPercentLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        VoucherLimitedPercentLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        VoucherLimitedPercentLabel.setText("-n%");
+        jPanel1.add(VoucherLimitedPercentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 150, 70, -1));
 
         KasirPanel.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 65, 450, 500));
 
@@ -410,6 +542,10 @@ public class MainPanel extends javax.swing.JFrame {
         SubtotalUndernum.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         SubtotalUndernum.setText("RP 0.000.000,00");
         KasirPanel.add(SubtotalUndernum, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 580, -1, -1));
+
+        TGLLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        TGLLabel.setText("1/1/1900");
+        KasirPanel.add(TGLLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 40, -1, -1));
 
         CardMainPanel.add(KasirPanel, "card2");
 
@@ -433,7 +569,6 @@ public class MainPanel extends javax.swing.JFrame {
     private void AddToCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddToCartButtonActionPerformed
         DefaultTableModel model = (DefaultTableModel) TabelCheckout.getModel();
         model.setRowCount(0);
-        DecimalFormat df = new DecimalFormat("#,##0.##");
         double subtotal = 0;
         for (Detail_penjualan Dp : ListBarangTemp) {
             subtotal += Dp.getSubtotal();
@@ -447,6 +582,7 @@ public class MainPanel extends javax.swing.JFrame {
         
         SubtotalLabelRightnum.setText("RP " + df.format(subtotal));
         SubtotalUndernum.setText("RP " + df.format(subtotal));
+        refreshVoucherCombo();
     }//GEN-LAST:event_AddToCartButtonActionPerformed
 
     private void PreviousButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PreviousButtonActionPerformed
@@ -474,6 +610,8 @@ public class MainPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_FilterButtonActionPerformed
 
     private void CartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CartButtonActionPerformed
+        SimpleDateFormat Date_Format = new SimpleDateFormat("dd-MM-YYYY");
+        TGLLabel.setText(Date_Format.format(new Date()));
         CartButton.setVisible(false);
         ShoppingPanel.setVisible(false);
         BackButton.setVisible(true);
@@ -486,6 +624,32 @@ public class MainPanel extends javax.swing.JFrame {
         BackButton.setVisible(false);
         KasirPanel.setVisible(false);
     }//GEN-LAST:event_BackButtonActionPerformed
+
+    private void CheckoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckoutButtonActionPerformed
+        processTransaction();
+    }//GEN-LAST:event_CheckoutButtonActionPerformed
+
+    private void VoucherFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VoucherFieldActionPerformed
+        appliedlimited = vouchercontroller.cekValiditasVoucherLimited(VoucherField.getText());
+        refreshCalc();
+    }//GEN-LAST:event_VoucherFieldActionPerformed
+
+    private void VoucherFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_VoucherFieldFocusGained
+        SearchField.setText("");
+        SearchField.setForeground(new Color(0, 0, 0));
+    }//GEN-LAST:event_VoucherFieldFocusGained
+
+    private void VoucherFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_VoucherFieldFocusLost
+        if (SearchField.getText().isBlank()){
+            SearchField.setForeground(new Color(153, 153, 153));
+            SearchField.setText("...");
+        }
+    }//GEN-LAST:event_VoucherFieldFocusLost
+
+    private void LogOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogOutButtonActionPerformed
+        listener.onLogOut();
+        this.dispose();
+    }//GEN-LAST:event_LogOutButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -524,10 +688,10 @@ public class MainPanel extends javax.swing.JFrame {
     private javax.swing.JPanel FilterPanelMenu;
     private javax.swing.JPanel KasirPanel;
     private javax.swing.JLabel LabelResult;
+    private javax.swing.JButton LogOutButton;
     private javax.swing.JButton NextButton;
     private javax.swing.JLabel PageNumberLabel;
     private javax.swing.JButton PreviousButton;
-    private javax.swing.JLabel ResiLabel;
     private javax.swing.JTextField SearchField;
     private javax.swing.JPanel ShoppingPanel;
     private javax.swing.JPanel ShoppingTablePanel;
@@ -535,6 +699,7 @@ public class MainPanel extends javax.swing.JFrame {
     private javax.swing.JLabel SubtotalLabelRightnum;
     private javax.swing.JLabel SubtotalLabelUnder;
     private javax.swing.JLabel SubtotalUndernum;
+    private javax.swing.JLabel TGLHeaderLabel;
     private javax.swing.JLabel TGLLabel;
     private javax.swing.JTable TabelCheckout;
     private javax.swing.JTable TableBarang;
@@ -542,12 +707,12 @@ public class MainPanel extends javax.swing.JFrame {
     private javax.swing.JLabel TotalLabel;
     private javax.swing.JLabel TotalLabelNum;
     private javax.swing.JLabel TransaksiHeader;
-    private javax.swing.JLabel Voucher1Label;
-    private javax.swing.JLabel Voucher1Label1;
-    private javax.swing.JLabel Voucher1Label2;
-    private javax.swing.JLabel Voucher2Label;
     private javax.swing.JComboBox<String> VoucherComboBox;
     private javax.swing.JTextField VoucherField;
+    private javax.swing.JLabel VoucherLimitedLabel;
+    private javax.swing.JLabel VoucherLimitedPercentLabel;
+    private javax.swing.JLabel VoucherPublicLabel;
+    private javax.swing.JLabel VoucherPublicPercentLabel;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
