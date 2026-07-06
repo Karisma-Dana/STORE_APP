@@ -65,7 +65,33 @@ public class MainPanel extends javax.swing.JFrame {
         void onLogOut();
     }
     
+    private void resetDetailPenjualan(){
+        SubtotalLabelRightnum.setText("RP 0");
+        SubtotalUndernum.setText("RP 0");
+        TotalLabelNum.setText("RP 0");
+        VoucherLimitedLabel.setText("RP -0");
+        VoucherPublicLabel.setText("RP -0");
+        VoucherLimitedPercentLabel.setText("");
+        VoucherPublicPercentLabel.setText("");
+        VoucherField.setText("...");
+        
+        if (VoucherComboBox.getItemCount() > 0) {
+            VoucherComboBox.setSelectedIndex(-1);
+        }
+    }
+    
     private void reset(){
+//        reset table checkout
+
+        ListBarangTemp.clear();
+        DefaultTableModel model = (DefaultTableModel) TabelCheckout.getModel();
+        model.setRowCount(0);
+        
+        if (TableBarang.isEditing()) {
+            TableBarang.getCellEditor().stopCellEditing();
+        }
+        TableBarang.clearSelection();
+        
         CartButton.setVisible(true);
         ShoppingPanel.setVisible(true);
         BackButton.setVisible(false);
@@ -73,11 +99,16 @@ public class MainPanel extends javax.swing.JFrame {
         
         CurFilterHarga = 0;
         CurPage = 1;
-        getTableData();
-        loadPage();
+        
+        resetDetailPenjualan();
+        
+        
         
         appliedlimited = null;
         appliedPublic = null;
+        
+        getTableData();
+        loadPage();
     }
     
     private void processTransaction(){
@@ -181,8 +212,7 @@ public class MainPanel extends javax.swing.JFrame {
                 }
                 appliedPublic = (Voucher) event.getItem();
                 refreshCalc();
-            }
-            
+            }   
         });
         
         addTextListener(SearchField, newtext -> {
@@ -537,6 +567,7 @@ public class MainPanel extends javax.swing.JFrame {
 
         CancelButton.setBackground(new java.awt.Color(153, 0, 51));
         CancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/x.png"))); // NOI18N
+        CancelButton.addActionListener(this::CancelButtonActionPerformed);
         jPanel1.add(CancelButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 50, 50));
 
         VoucherPublicPercentLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -667,6 +698,12 @@ public class MainPanel extends javax.swing.JFrame {
         listener.onLogOut();
         this.dispose();
     }//GEN-LAST:event_LogOutButtonActionPerformed
+
+    private void CancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelButtonActionPerformed
+        // TODO add your handling code here:
+        
+        reset();
+    }//GEN-LAST:event_CancelButtonActionPerformed
 
     /**
      * @param args the command line arguments

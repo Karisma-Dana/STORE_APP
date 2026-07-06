@@ -174,7 +174,7 @@ public class BarangDAO {
     }
     
     public void updateStok(int id, int newStok){
-        String querySQL = "UPDATE barang SET stok = ? WHERE = ?";
+        String querySQL = "UPDATE barang SET stok = ? WHERE id = ?";
         
         try(Connection conn = Koneksi.getKoneksi();
              PreparedStatement ps = conn.prepareStatement(querySQL)){
