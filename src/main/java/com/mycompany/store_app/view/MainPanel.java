@@ -689,8 +689,8 @@ public class MainPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_VoucherFieldActionPerformed
 
     private void VoucherFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_VoucherFieldFocusGained
-        SearchField.setText("");
-        SearchField.setForeground(new Color(0, 0, 0));
+        VoucherField.setText("");
+        VoucherField.setForeground(new Color(0, 0, 0));
     }//GEN-LAST:event_VoucherFieldFocusGained
 
     private void VoucherFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_VoucherFieldFocusLost
