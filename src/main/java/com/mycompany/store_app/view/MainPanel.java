@@ -102,9 +102,6 @@ public class MainPanel extends javax.swing.JFrame {
         CurPage = 1;
         
         resetDetailPenjualan();
-        
-        
-        
         appliedlimited = null;
         appliedPublic = null;
         
@@ -113,6 +110,10 @@ public class MainPanel extends javax.swing.JFrame {
     }
     
     private void processTransaction(){
+        if (ListBarangTemp.size() < 1){
+            System.out.println("Tidak boleh");
+            return;
+        }
         double total = refreshCalc();
         int notaID = pcontroller.insert(new Penjualan(total));
         Penjualan penjualan = pcontroller.getDatabyID(notaID);
@@ -172,8 +173,7 @@ public class MainPanel extends javax.swing.JFrame {
         double LimitedDiscount = 0;
         double PublicDiscount = 0;
         
-        
-        
+
         if (appliedlimited != null){
             VoucherLimitedPercentLabel.setText("-"+appliedlimited.getDiskon()+"%");
             LimitedDiscount = appliedlimited.getDiskon()*subtotal/100;
@@ -396,7 +396,6 @@ public class MainPanel extends javax.swing.JFrame {
             public void stateChanged(ChangeEvent e) {
                 Object value = ((JSpinner) e.getSource()).getValue();
                 CurFilterHarga = Double.parseDouble(value.toString());
-                System.out.println(CurFilterHarga);
             }
         });
 
@@ -664,6 +663,7 @@ public class MainPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_FilterButtonActionPerformed
     
     private void CartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CartButtonActionPerformed
+        refreshVoucherCombo();
         SimpleDateFormat Date_Format = new SimpleDateFormat("dd-MM-YYYY");
         TGLLabel.setText(Date_Format.format(new Date()));
         CartButton.setVisible(false);
@@ -694,9 +694,9 @@ public class MainPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_VoucherFieldFocusGained
 
     private void VoucherFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_VoucherFieldFocusLost
-        if (SearchField.getText().isBlank()){
-            SearchField.setForeground(new Color(153, 153, 153));
-            SearchField.setText("...");
+        if (VoucherField.getText().isBlank()){
+            VoucherField.setForeground(new Color(153, 153, 153));
+            VoucherField.setText("...");
         }
     }//GEN-LAST:event_VoucherFieldFocusLost
 
