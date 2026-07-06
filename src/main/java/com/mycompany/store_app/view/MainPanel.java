@@ -140,6 +140,8 @@ public class MainPanel extends javax.swing.JFrame {
         double LimitedDiscount = 0;
         double PublicDiscount = 0;
         
+        
+        
         if (appliedlimited != null){
             VoucherLimitedPercentLabel.setText("-"+appliedlimited.getDiskon()+"%");
             LimitedDiscount = appliedlimited.getDiskon()*subtotal/100;
@@ -157,6 +159,9 @@ public class MainPanel extends javax.swing.JFrame {
         }
         
         double total = subtotal - LimitedDiscount - PublicDiscount;
+        if (total < 0 ){
+            total = 0;
+        }
         SubtotalLabelRightnum.setText("RP " + df.format(subtotal));
         SubtotalUndernum.setText("RP " + df.format(subtotal));
         TotalLabelNum.setText("RP " +df.format(total));

@@ -157,10 +157,8 @@ public class UserDAO {
                     user = new User();
                     user.setEmail(rs.getString("email"));
                     user.setNama(rs.getString("username"));
-                    if (rs.getString("email").equals("pass123@gmail.com")){
-                        user.setNama("admin");
-                    }
-                    user.setPassword(rs.getString("password"));
+                    
+                    
                 }
             }
             System.out.println("berhasil : email dan password sesuai dengan database");

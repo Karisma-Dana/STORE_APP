@@ -22,6 +22,9 @@ public class STORE_APP {
     private static UserController form;
     private static PromptLogin promptlogin;
     
+    private static String emailAdmin = "pass123@gmail.com";
+    private static String usernameAdmin = "admin";
+    
     public static void rebuild(){
         mainpanel = new MainPanel(new MainPanel.listenerMainPanel() {
             @Override
@@ -41,7 +44,7 @@ public class STORE_APP {
             @Override
             public void onLogin(User user) {
                 promptlogin.dispose();
-                if (user.getNama().equals("admin")){
+                if (user.getNama().equals(usernameAdmin) && (user.getEmail().equals(emailAdmin))){
                     adminpanel.setVisible(true);
                 } else {
                     mainpanel.setVisible(true);

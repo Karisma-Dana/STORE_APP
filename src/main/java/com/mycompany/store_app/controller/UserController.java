@@ -22,6 +22,8 @@ public class UserController {
     private final EmailServices emailservice = new EmailServices();
     private UserController.ListenerUserController listener;
     private User signedUser;
+    private String emailAdmin = "pass123@gmail.com";
+    private String usernameAdmin = "admin";
     
     public interface ListenerUserController{
         void onLogin(User user);
@@ -51,7 +53,7 @@ public class UserController {
     public User signIn(User user){
         if(!userdao.checkEmail_unik(user.getEmail())){
             signedUser = userdao.login(user.getEmail(), user.getPassword());
-            listener.onLogin(user);
+            listener.onLogin(signedUser);
         }
         return null;
     }

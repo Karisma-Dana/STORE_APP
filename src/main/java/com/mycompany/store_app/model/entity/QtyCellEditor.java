@@ -32,7 +32,7 @@ public class QtyCellEditor extends DefaultCellEditor{
         input = new JSpinner();
         SpinnerNumberModel numberModel = (SpinnerNumberModel)input.getModel();
         numberModel.setMinimum(0);
-        numberModel.setMaximum(item.getBarang().getStok());
+//        numberModel.setMaximum(item.getBarang().getStok());
         JSpinner.NumberEditor editor = (JSpinner.NumberEditor)input.getEditor();
         DefaultFormatter formatter = (DefaultFormatter)editor.getTextField().getFormatter();
         formatter.setCommitsOnValidEdit(true);
@@ -74,7 +74,14 @@ public class QtyCellEditor extends DefaultCellEditor{
         super.getTableCellEditorComponent(table, value, isSelected, row, column);
         this.table = table;
         this.row = row;
+        
+        
         this.item = (ItemCell)table.getValueAt(row, 0);
+        if (this.item != null && this.item.getBarang() != null) {
+            SpinnerNumberModel numberModel = (SpinnerNumberModel) input.getModel();
+            numberModel.setMaximum(this.item.getBarang().getStok());
+        }
+        
         int qty = Integer.parseInt(value.toString());
         input.setValue(qty);
         return input;
