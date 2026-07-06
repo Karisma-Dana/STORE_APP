@@ -24,6 +24,7 @@ public class VoucherPanel extends javax.swing.JPanel {
     private int CurPage = 1;
     private int TotalPage;
     private double CurFilterHarga = 0;
+
     private List<Voucher> TableDataList = new ArrayList();
     /**
      * Creates new form VoucherPanel
@@ -121,6 +122,7 @@ public class VoucherPanel extends javax.swing.JPanel {
         jPanel3.add(txtSearch, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 19, 400, 32));
 
         cbJenis.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ALL", "LIMITED", "PUBLIC", " " }));
+        cbJenis.addActionListener(this::cbJenisActionPerformed);
         jPanel3.add(cbJenis, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 20, 130, 30));
 
         NextButton.setText("Next");
@@ -258,6 +260,11 @@ public class VoucherPanel extends javax.swing.JPanel {
             txtSearch.setText(SEARCHPLACEHOLDER);
         }
     }//GEN-LAST:event_txtSearchFocusLost
+
+    private void cbJenisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbJenisActionPerformed
+        getTableData();
+        loadPage();
+    }//GEN-LAST:event_cbJenisActionPerformed
     
     private String retrieveSearch(){
         if (txtSearch.getText().equals("Type to search for item...")){
@@ -289,6 +296,9 @@ public class VoucherPanel extends javax.swing.JPanel {
     }
     
     public String getFilter(){
+        if (cbJenis.getSelectedItem().toString().equals("ALL")){
+            return "";
+        }
         return cbJenis.getSelectedItem().toString();
     }
     
@@ -301,7 +311,7 @@ public class VoucherPanel extends javax.swing.JPanel {
                 CurPage = 1;
             }
         }
-        TableDataList = controller.ambilVoucherValid(EntryPerPage, CurPage, retrieveSearch(), "");
+        TableDataList = controller.ambilVoucherValid(EntryPerPage, CurPage, getFilter(), retrieveSearch());
         PageNumberLabel.setText(CurPage + " / " + TotalPage);
     }
 

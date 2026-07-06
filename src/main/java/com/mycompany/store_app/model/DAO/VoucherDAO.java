@@ -234,7 +234,7 @@ public int count(String jenis, String search) {
     
     public List<Voucher> ambilVoucherPublic(){
         List<Voucher> listVoucher = new ArrayList<>();
-        String querySQL = "SELECT * FROM voucher WHERE jenis_voucher = 'PUBLIC'";
+        String querySQL = "SELECT * FROM voucher WHERE jenis_voucher = 'PUBLIC' AND stok > 0";
         try (Connection conn = Koneksi.getKoneksi();
             PreparedStatement ps = conn.prepareStatement(querySQL)) {
             try (ResultSet rs = ps.executeQuery()) {
@@ -259,7 +259,7 @@ public int count(String jenis, String search) {
     
     public Voucher checkVoucher_LIMITED(String kodeVoucher){
         Voucher voucher = null;
-        String querySQL = "SELECT * FROM voucher WHERE kode_voucher = ? AND jenis_voucher = 'LIMITED'";
+        String querySQL = "SELECT * FROM voucher WHERE kode_voucher = ? AND jenis_voucher = 'LIMITED' AND stok > 0";
         
         try(Connection conn = Koneksi.getKoneksi();
          PreparedStatement ps = conn.prepareStatement(querySQL)){
