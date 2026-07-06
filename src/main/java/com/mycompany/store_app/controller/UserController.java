@@ -20,7 +20,13 @@ public class UserController {
     private final UserDAO userdao = new UserDAO();
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private final EmailServices emailservice = new EmailServices();
+    private UserController.ListenerUserController listener;
     private User signedUser;
+    
+    public interface ListenerUserController{
+        void onLogin(User user);
+    }
+    
     private String generateOTP(){
         String OTP = "";
         Random randomNumber = new Random();
@@ -33,13 +39,11 @@ public class UserController {
         return OTP;
     }
     
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        pcs.addPropertyChangeListener(listener);
-        System.out.println(pcs.hasListeners("signedUser"));
-    }
-    
     public UserController(){}
     
+    public UserController(ListenerUserController listener){
+        this.listener = listener;
+    }
     public void signalUserSigned(){
         pcs.firePropertyChange("signedUser", null, signedUser);
     }
@@ -47,7 +51,7 @@ public class UserController {
     public User signIn(User user){
         if(!userdao.checkEmail_unik(user.getEmail())){
             signedUser = userdao.login(user.getEmail(), user.getPassword());
-            signalUserSigned();
+            listener.onLogin(user);
         }
         return null;
     }

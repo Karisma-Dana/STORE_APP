@@ -36,21 +36,19 @@ public class STORE_APP {
                 rebuild();
             }
         });
-        form = new UserController();
         
-        form.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-                if ("signedUser".equals(evt.getPropertyName())) {
-                    User user = (User) evt.getNewValue();
-                    if (user != null) {
-                        promptlogin.setVisible(false);
-                        if (user.getNama().equals("admin")){
-                            adminpanel.setVisible(true);
-                        } else {
-                            mainpanel.setVisible(true);
-                        }
-                    }
+        form = new UserController(new UserController.ListenerUserController(){
+            @Override
+            public void onLogin(User user) {
+                promptlogin.dispose();
+                if (user.getNama().equals("admin")){
+                    adminpanel.setVisible(true);
+                } else {
+                    mainpanel.setVisible(true);
                 }
-            });
+            }
+        });
+        
         promptlogin = new PromptLogin(form);
         promptlogin.setVisible(true);
     }
