@@ -32,6 +32,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -94,6 +95,17 @@ public class MainPanel extends javax.swing.JFrame {
         
         for (Detail_penjualan dp : ListBarangTemp) {
             dp.setPenjualan(penjualan);
+            if (barangcontroller.ambilBarangById(dp.getBarang().getId()).getStok() < dp.getJumlah()) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Insufficient stock for item: " + dp.getBarang().getNama()
+                        + "\nAvailable: " + barangcontroller.ambilBarangById(dp.getBarang().getId()).getStok()
+                        + "\nRequested: " + dp.getJumlah(),
+                        "Transaction Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
             barangcontroller.perbaruiStok(dp.getBarang().getId(), barangcontroller.ambilBarangById(dp.getBarang().getId()).getStok()-dp.getJumlah());
             dpcontroller.insert(dp);
         }
