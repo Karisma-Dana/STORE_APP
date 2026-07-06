@@ -61,7 +61,6 @@ public class QtyCellEditor extends DefaultCellEditor{
         DecimalFormat df = new DecimalFormat("#,##0.##");
         int qty = Integer.parseInt(input.getValue().toString());
         if(qty != item.getQty()){
-
             item.setQty(qty);
             item.setTotal(item.getBarang().getHarga()*qty);
             table.setValueAt("RP " + df.format(item.getTotal()), row, 6);
