@@ -29,6 +29,14 @@ public class UserController {
         void onLogin(User user);
     }
     
+    private static class OTPHolder {
+        String value;
+
+        OTPHolder(String value) {
+            this.value = value;
+        }
+    }
+
     private String generateOTP(){
         String OTP = "";
         Random randomNumber = new Random();
@@ -55,25 +63,49 @@ public class UserController {
             signedUser = userdao.login(user.getEmail(), user.getPassword());
             listener.onLogin(signedUser);
         }
+        
         return null;
     }
     
+    private boolean resendOTP(User user, String otp){
+        return emailservice.sendEmailOTP(user.getEmail(), otp);
+    }
+    
     public boolean signUp(PromptLogin promptlogin, User user) {
-        String otp = generateOTP();
+        OTPHolder otpHolder = new OTPHolder(generateOTP());
 
         if (userdao.checkEmail_unik(user.getEmail())) {
-            emailservice.sendEmailOTP(user.getEmail(), otp);
+            emailservice.sendEmailOTP(user.getEmail(), otpHolder.value);
 
-            promptlogin.createOTPInput((String enteredOTP) -> {
-                if (enteredOTP.equals(otp)) {
-                    userdao.register(user);
-                    promptlogin.onCompleteSignUp();
-                    JOptionPane.showMessageDialog(null, "Registered, go ahead and sign in with your credentials.");
-                } else {
-                    // Handle wrong OTP
-                    JOptionPane.showMessageDialog(null, "Invalid OTP. Please try again.");
+            promptlogin.createOTPInput(new PromptLogin.OTPCallback() {
+                @Override
+                public void onOTPEntered(String enteredOTP) {
+                    if (enteredOTP.equals(otpHolder.value)) {
+                        userdao.register(user);
+                        promptlogin.onCompleteSignUp();
+                        JOptionPane.showMessageDialog(null,
+                                "Registration successful! Please sign in with your credentials.",
+                                "Success",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null,
+                                "Invalid OTP. Please try again.",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+                @Override
+                public void onResendOTP() {
+                    otpHolder.value = generateOTP();
+                    emailservice.sendEmailOTP(user.getEmail(), otpHolder.value);
+                    JOptionPane.showMessageDialog(null,
+                            "New OTP has been sent to your email!",
+                            "OTP Resent",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             });
+
             return true;
         }
         return false;

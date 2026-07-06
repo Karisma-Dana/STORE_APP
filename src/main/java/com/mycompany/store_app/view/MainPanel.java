@@ -9,12 +9,12 @@ import com.mycompany.store_app.controller.BarangController;
 import com.mycompany.store_app.controller.DetailPenjualanController;
 import com.mycompany.store_app.controller.PenjualanController;
 import com.mycompany.store_app.controller.VoucherController;
-import com.mycompany.store_app.model.entity.ItemCell;
+import com.mycompany.store_app.util.ItemCell;
 import com.mycompany.store_app.model.entity.Barang;
 import com.mycompany.store_app.model.entity.Detail_penjualan;
-import com.mycompany.store_app.model.entity.ItemChangeListener;
+import com.mycompany.store_app.util.ItemChangeListener;
 import com.mycompany.store_app.model.entity.Penjualan;
-import com.mycompany.store_app.model.entity.QtyCellEditor;
+import com.mycompany.store_app.util.QtyCellEditor;
 import com.mycompany.store_app.model.entity.Voucher;
 import java.awt.Color;
 import java.awt.Component;
@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -221,9 +222,6 @@ public class MainPanel extends javax.swing.JFrame {
         });
         getTableData();
         loadPage();
-        
-
-        
     }
     
     private String retrieveSearch(){
@@ -234,14 +232,14 @@ public class MainPanel extends javax.swing.JFrame {
         }
     }
     public void getTableData(){
-        TotalPage = (int) Math.ceil((double) barangcontroller.count(CurFilterHarga, retrieveSearch()) / EntryPerPage);
+        TotalPage = (int) Math.ceil((double) barangcontroller.countAvailable(CurFilterHarga, retrieveSearch()) / EntryPerPage);
         if (TotalPage < CurPage) {
             CurPage = TotalPage;
             if (CurPage <= 0) {
                 CurPage = 1;
             }
         }
-        TableDataList = barangcontroller.ambilSemuaBarang(EntryPerPage, CurPage, retrieveSearch(), CurFilterHarga);
+        TableDataList = barangcontroller.ambilSemuaBarangAvailable(EntryPerPage, CurPage, retrieveSearch(), CurFilterHarga);
         PageNumberLabel.setText(CurPage + " / " + TotalPage);
     }
     
@@ -304,6 +302,12 @@ public class MainPanel extends javax.swing.JFrame {
         CardMainPanel = new javax.swing.JPanel();
         ShoppingPanel = new javax.swing.JPanel();
         FilterPanelMenu = new javax.swing.JPanel();
+        SpinnerNumberModel doubleModel = new SpinnerNumberModel(
+            0.0,    // initial value (Double)
+            0.0,    // minimum (Double)
+            Double.MAX_VALUE,  // maximum (Double)
+            1     // step size (Double)
+        );
         FilterHargaSpinner = new javax.swing.JSpinner();
         jLabel2 = new javax.swing.JLabel();
         ShoppingTablePanel = new javax.swing.JPanel();
@@ -383,7 +387,9 @@ public class MainPanel extends javax.swing.JFrame {
         FilterPanelMenu.setPreferredSize(new java.awt.Dimension(150, 50));
         FilterPanelMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        FilterHargaSpinner.setModel(doubleModel);
         FilterHargaSpinner.setPreferredSize(new java.awt.Dimension(100, 30));
+        FilterHargaSpinner.addChangeListener(this::FilterHargaSpinnerStateChanged);
         FilterPanelMenu.add(FilterHargaSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 12, -1, 25));
         FilterHargaSpinner.addChangeListener(new ChangeListener() {
             @Override
@@ -656,7 +662,7 @@ public class MainPanel extends javax.swing.JFrame {
             FilterPanelMenu.setVisible(true);
         }
     }//GEN-LAST:event_FilterButtonActionPerformed
-
+    
     private void CartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CartButtonActionPerformed
         SimpleDateFormat Date_Format = new SimpleDateFormat("dd-MM-YYYY");
         TGLLabel.setText(Date_Format.format(new Date()));
@@ -700,10 +706,14 @@ public class MainPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_LogOutButtonActionPerformed
 
     private void CancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelButtonActionPerformed
-        // TODO add your handling code here:
-        
         reset();
     }//GEN-LAST:event_CancelButtonActionPerformed
+
+    private void FilterHargaSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_FilterHargaSpinnerStateChanged
+        CurFilterHarga = (double)FilterHargaSpinner.getValue();
+        getTableData();
+        loadPage();
+    }//GEN-LAST:event_FilterHargaSpinnerStateChanged
 
     /**
      * @param args the command line arguments

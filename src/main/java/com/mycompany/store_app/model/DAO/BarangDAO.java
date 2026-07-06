@@ -89,6 +89,30 @@ public class BarangDAO {
         }
     }
     
+    public int countAvailable(double pricefilter, String namefilter){
+        String querySQL = "SELECT COUNT(*) FROM barang WHERE harga < ? AND stok > 0 AND nama LIKE ?";
+        if (pricefilter == 0){
+            pricefilter = 999999999;
+        };
+        try (Connection conn = Koneksi.getKoneksi();
+             PreparedStatement ps = conn.prepareStatement(querySQL)) {
+
+            ps.setDouble(1, pricefilter);
+            ps.setString(2, namefilter + "%");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Gagal menghitung data barang: " + e.getMessage());
+        }
+
+        return 0;
+    }
+    
     public int count(double pricefilter, String namefilter){
         String querySQL = "SELECT COUNT(*) FROM barang WHERE harga < ? AND nama LIKE ?";
         if (pricefilter == 0){
@@ -112,7 +136,40 @@ public class BarangDAO {
 
         return 0;
     }
+    
+    public List<Barang> readAllAvailable(int EntryPerPage, int Page, String namefilter, double pricefilter) {
+        List<Barang> listBarang = new ArrayList<>();
+        String querySQL = "SELECT * FROM barang WHERE harga < ? AND stok > 0 AND nama LIKE ? ORDER BY id LIMIT ? OFFSET ?";
+        if (pricefilter == 0){
+            pricefilter = 999999999;
+        };
+        
+        try (Connection conn = Koneksi.getKoneksi();
+            PreparedStatement ps = conn.prepareStatement(querySQL)) {
 
+            ps.setDouble(1, pricefilter);
+            ps.setString(2, "%" + namefilter + "%");
+            ps.setInt(3, EntryPerPage);
+            ps.setInt(4, (Math.abs(Page - 1) * EntryPerPage));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Barang barang = new Barang();
+                    barang.setId(rs.getInt("id"));
+                    barang.setNama(rs.getString("nama"));
+                    barang.setHarga(rs.getDouble("harga"));
+                    barang.setStok(rs.getInt("stok"));
+                    listBarang.add(barang);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Gagal membaca data barang: " + e.getMessage());
+        }
+
+        return listBarang;
+    }
+    
     public List<Barang> readAll(int EntryPerPage, int Page, String namefilter, double pricefilter) {
         List<Barang> listBarang = new ArrayList<>();
         String querySQL = "SELECT * FROM barang WHERE harga < ? AND nama LIKE ? ORDER BY id LIMIT ? OFFSET ?";
@@ -143,7 +200,7 @@ public class BarangDAO {
         }
 
     return listBarang;
-}
+    }
     
     public Barang getById(int id_barang){
         Barang barang = null;

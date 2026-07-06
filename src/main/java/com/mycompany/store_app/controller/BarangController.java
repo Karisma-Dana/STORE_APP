@@ -33,6 +33,15 @@ public class BarangController {
         return barangDAO.count(pricefilter, namabarang);
     }
     
+    public List<Barang> ambilSemuaBarangAvailable(int EntryperPage, int Page, String namabarang, double pricefilter) {
+        System.out.println(pricefilter);
+        return barangDAO.readAllAvailable(EntryperPage, Page, namabarang, pricefilter);
+    }
+    
+    public int countAvailable(double pricefilter, String namabarang){
+        return barangDAO.countAvailable(pricefilter, namabarang);
+    }
+    
     public List<Barang> ambilSemuaBarang(int EntryperPage, int Page, String namabarang, double pricefilter) {
         return barangDAO.readAll(EntryperPage, Page, namabarang, pricefilter);
     }

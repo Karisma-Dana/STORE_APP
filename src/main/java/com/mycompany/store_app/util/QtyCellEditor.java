@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.store_app.model.entity;
+package com.mycompany.store_app.util;
 import java.awt.Component;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
@@ -32,7 +32,6 @@ public class QtyCellEditor extends DefaultCellEditor{
         input = new JSpinner();
         SpinnerNumberModel numberModel = (SpinnerNumberModel)input.getModel();
         numberModel.setMinimum(0);
-//        numberModel.setMaximum(item.getBarang().getStok());
         JSpinner.NumberEditor editor = (JSpinner.NumberEditor)input.getEditor();
         DefaultFormatter formatter = (DefaultFormatter)editor.getTextField().getFormatter();
         formatter.setCommitsOnValidEdit(true);
