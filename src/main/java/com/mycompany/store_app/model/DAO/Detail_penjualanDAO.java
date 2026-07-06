@@ -32,7 +32,6 @@ public class Detail_penjualanDAO {
     private final BarangDAO barangDAO = new BarangDAO();
     
     public void insert(Detail_penjualan dp){
-        
         String querySQL = "INSERT INTO detail_penjualan (id_nota, id_barang, jumlah, subtotal) VALUES (?, ?, ?, ?)";
         try(Connection conn = Koneksi.getKoneksi();
             PreparedStatement ps = conn.prepareStatement(querySQL)){
@@ -117,11 +116,6 @@ public class Detail_penjualanDAO {
         }catch(SQLException e){
             System.out.println("Gagal membaca detail penjualan : " + e.getMessage());
         }
-        
-        
-        
-        
-        
         return listDetail;
     }
     
@@ -199,11 +193,7 @@ public class Detail_penjualanDAO {
         }catch(SQLException e){
             System.out.println("Gagal membaca detail penjualan : " + e.getMessage());
         }
-        
-        
-        
-        
-        
+       
         return listDetail;
     }
     

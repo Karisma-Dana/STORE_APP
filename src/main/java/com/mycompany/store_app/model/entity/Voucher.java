@@ -9,47 +9,50 @@ package com.mycompany.store_app.model.entity;
  * @author karis
  */
 
-public class Voucer {
+public class Voucher {
     private int id;
-    private String kode_voucer;
-    private String jenis_voucer;
+    private String kode_voucher;
+    private String jenis_voucher;
     private double diskon;
     private int stok;
     
     
     
-    public Voucer(){
+    public Voucher(){
         
     }
     
-    public Voucer(String kode_voucer, String jenis_voucer, double diskon, int stok){
-        this.kode_voucer = kode_voucer;
-        this.jenis_voucer = jenis_voucer;
+    public Voucher(String kode_voucer, String jenis_voucer, double diskon, int stok){
+        this.kode_voucher = kode_voucer;
+        this.jenis_voucher = jenis_voucer;
         this.diskon = diskon;
         this.stok = stok;
     }
     
-    public Voucer(int id, String kode_voucer, String jenis_voucer, double diskon, int stok){
+    public Voucher(int id, String kode_voucer, String jenis_voucer, double diskon, int stok){
         this.id = id;
-        this.kode_voucer = kode_voucer;
-        this.jenis_voucer = jenis_voucer;
+        this.kode_voucher = kode_voucer;
+        this.jenis_voucher = jenis_voucer;
         this.diskon = diskon;
         this.stok = stok;
     }
     
     
-    
+    @Override
+    public String toString() {
+        return kode_voucher + " (" + jenis_voucher + " - " + diskon + "%)";
+    }
 
     public int getId() {
         return id;
     }
 
-    public String getKode_voucer() {
-        return kode_voucer;
+    public String getKode_voucher() {
+        return kode_voucher;
     }
 
-    public String getJenis_voucer() {
-        return jenis_voucer;
+    public String getJenis_voucher() {
+        return jenis_voucher;
     }
 
     public double getDiskon() {
@@ -64,12 +67,12 @@ public class Voucer {
         this.id = id;
     }
 
-    public void setKode_voucer(String kode_voucer) {
-        this.kode_voucer = kode_voucer;
+    public void setKode_voucher(String kode_voucer) {
+        this.kode_voucher = kode_voucer;
     }
 
-    public void setJenis_voucer(String jenis_voucer) {
-        this.jenis_voucer = jenis_voucer;
+    public void setJenis_voucher(String jenis_voucer) {
+        this.jenis_voucher = jenis_voucer;
     }
 
     public void setDiskon(double diskon) {

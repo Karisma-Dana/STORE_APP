@@ -118,29 +118,26 @@ public class UserDAO {
     
 //    pengecekan emai unik
     public boolean checkEmail_unik(String email){
-        boolean answare = false;
+        boolean answer = true;
         String querySQL = "SELECT COUNT(*) AS total FROM users WHERE email = ? ";
-        
         try(Connection conn = Koneksi.getKoneksi();
-             PreparedStatement ps = conn.prepareStatement(querySQL)){
-            
+            PreparedStatement ps = conn.prepareStatement(querySQL)){
             ps.setString(1, email);
             
             try(ResultSet rs = ps.executeQuery()){
                 if (rs.next()){
                     int jumlah = rs.getInt("total");
                     if (jumlah > 0){
-                        answare = true;
+                        answer = false;
                     }
                 }
             }
-            System.out.println("berhasil : email belum pernah terdaftar ke dalam database");
             
         }catch(SQLException e){
             System.out.println("gagal check email : " + e.getMessage());
         }
         
-        return answare; 
+        return answer; 
     }
     
     
@@ -160,7 +157,8 @@ public class UserDAO {
                     user = new User();
                     user.setEmail(rs.getString("email"));
                     user.setNama(rs.getString("username"));
-                    user.setPassword(rs.getString("password"));
+                    
+                    
                 }
             }
             System.out.println("berhasil : email dan password sesuai dengan database");
