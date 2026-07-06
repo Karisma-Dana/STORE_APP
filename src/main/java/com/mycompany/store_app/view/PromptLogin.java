@@ -13,6 +13,8 @@ import com.mycompany.store_app.model.entity.User;
 import com.mycompany.store_app.controller.UserController;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 /**
  *
  * @author Flame
@@ -20,7 +22,6 @@ import java.awt.event.ActionListener;
 public class PromptLogin extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PromptLogin.class.getName());
     private UserController usercontroller;
-    
     public static void addTextListener(JTextField field, java.util.function.Consumer<String> consumer) {
         field.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
@@ -28,7 +29,7 @@ public class PromptLogin extends javax.swing.JFrame {
             @Override public void changedUpdate(DocumentEvent e) { consumer.accept(field.getText()); }
         });
     }
-
+    
     private PromptLogin() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
@@ -75,6 +76,17 @@ public class PromptLogin extends javax.swing.JFrame {
                 callback.onOTPEntered(otp);
             }
         });
+        
+        ResendLabel.addMouseListener(new MouseAdapter() {
+            
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            // Handle resend OTP
+            System.out.println("Resend OTP clicked!");
+            // Call your resend OTP logic here
+            callback.onResendOTP(); // Add this method to your callback interface
+        }
+    });
     }
     
     public void onCompleteSignUp(){
@@ -82,8 +94,10 @@ public class PromptLogin extends javax.swing.JFrame {
         SignInForm.setVisible(true);
         OTPForm.setVisible(false);
     }
+    
     public interface OTPCallback {
         void onOTPEntered(String otp);
+        void onResendOTP();
     }
     
     private void signUp(){
@@ -163,6 +177,7 @@ public class PromptLogin extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         PromptPanel2 = new javax.swing.JPanel();
         LabelPrompt2 = new javax.swing.JLabel();
+        ResendLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(12, 185, 168));
@@ -545,11 +560,21 @@ public class PromptLogin extends javax.swing.JFrame {
         PromptPanel2.setOpaque(false);
         PromptPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        LabelPrompt2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        LabelPrompt2.setText("Did not receive code? (welp :C)");
+        LabelPrompt2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        LabelPrompt2.setText("Did not receive code?");
         LabelPrompt2.setMaximumSize(new java.awt.Dimension(202, 16));
         LabelPrompt2.setPreferredSize(new java.awt.Dimension(202, 16));
-        PromptPanel2.add(LabelPrompt2, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 0, 190, 25));
+        PromptPanel2.add(LabelPrompt2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 0, 190, 25));
+
+        ResendLabel.setForeground(new java.awt.Color(0, 0, 238));
+        ResendLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ResendLabel.setText("Resend");
+        ResendLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                ResendLabelMouseEntered(evt);
+            }
+        });
+        PromptPanel2.add(ResendLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(175, 0, -1, 25));
 
         javax.swing.GroupLayout OTPFormLayout = new javax.swing.GroupLayout(OTPForm);
         OTPForm.setLayout(OTPFormLayout);
@@ -612,7 +637,7 @@ public class PromptLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_SignInLabelMouseClicked
 
     private void SignInLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SignInLabelMouseEntered
-        // TODO add your handling code here:
+        SignUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }//GEN-LAST:event_SignInLabelMouseEntered
 
     private void EmailField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EmailField3ActionPerformed
@@ -638,6 +663,10 @@ public class PromptLogin extends javax.swing.JFrame {
     private void ConfirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfirmButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_ConfirmButtonActionPerformed
+
+    private void ResendLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ResendLabelMouseEntered
+        SignUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }//GEN-LAST:event_ResendLabelMouseEntered
 
     /**
      * @param args the command line arguments
@@ -691,6 +720,7 @@ public class PromptLogin extends javax.swing.JFrame {
     private javax.swing.JPanel PromptPanel;
     private javax.swing.JPanel PromptPanel1;
     private javax.swing.JPanel PromptPanel2;
+    private javax.swing.JLabel ResendLabel;
     private javax.swing.JButton SignInButton;
     private javax.swing.JPanel SignInForm;
     private javax.swing.JLabel SignInLabel;

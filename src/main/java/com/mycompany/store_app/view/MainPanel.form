@@ -177,8 +177,14 @@
                       <Dimension value="[100, 30]"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="FilterHargaSpinnerStateChanged"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="FilterHargaSpinner.addChangeListener(new ChangeListener() {&#xa;    @Override&#xa;    public void stateChanged(ChangeEvent e) {&#xa;    Object value = ((JSpinner) e.getSource()).getValue();&#xa;        CurFilterHarga = Double.parseDouble(value.toString());&#xa;        System.out.println(CurFilterHarga);&#xa;    }&#xa;});"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner()"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="SpinnerNumberModel doubleModel = new SpinnerNumberModel(&#xa;    0.0,    // initial value (Double)&#xa;    0.0,    // minimum (Double)&#xa;    Double.MAX_VALUE,  // maximum (Double)&#xa;    1     // step size (Double)&#xa;);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="FilterHargaSpinner.setModel(doubleModel);"/>
                   </AuxValues>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
